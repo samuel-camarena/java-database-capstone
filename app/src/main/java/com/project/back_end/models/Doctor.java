@@ -19,9 +19,9 @@ public class Doctor {
     @NotNull(message = "Name is required")
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
-    @NotNull(message = "Speciality is required")
-    @Size(min = 3, max = 50, message = "Speciality must be between 3 and 50 characters")
-    private String speciality;
+    @NotNull(message = "Specialty is required")
+    @Size(min = 3, max = 50, message = "Specialty must be between 3 and 50 characters")
+    private String specialty;
     @NotNull(message = "Email is required")
     @UniqueElements(message = "Email is required")
     @Email
@@ -38,10 +38,10 @@ public class Doctor {
 
     public Doctor() {}
 
-    public Doctor(long id, String name, String speciality, String email, String password, String phone, List<String> availableTimes) {
+    public Doctor(long id, String name, String specialty, String email, String password, String phone, List<String> availableTimes) {
         this.id = id;
         this.name = name;
-        this.speciality = speciality;
+        this.specialty = specialty;
         this.email = email;
         this.password = password;
         this.phone = phone;
@@ -64,12 +64,12 @@ public class Doctor {
         this.name = name;
     }
 
-    public String getSpeciality() {
-        return speciality;
+    public String getSpecialty() {
+        return specialty;
     }
 
-    public void setSpeciality(String speciality) {
-        this.speciality = speciality;
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
     }
 
     public String getEmail() {
