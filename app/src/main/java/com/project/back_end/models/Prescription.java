@@ -6,9 +6,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-//import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Document(collection = "prescriptions")
+@Document(collection = "prescriptions")
 public class Prescription {
 
     @Id
