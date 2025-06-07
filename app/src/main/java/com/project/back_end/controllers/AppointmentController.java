@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
-
+    /*
     private final AppointmentService appointmentService;
     private final Service service;
 
@@ -40,7 +40,7 @@ public class AppointmentController {
     public ResponseEntity<Map <String,Object>> getAppointments(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, @PathVariable String patientName,@PathVariable String token)
     {
         Map<String, Object> map = new HashMap<>();
-        ResponseEntity<Map<String,String>> tempMap= service.validateToken(token, "doctor");
+        ResponseEntity<Map<String,String>> tempMap = service.validateToken(token, "doctor");
         if (!tempMap.getBody().isEmpty()) {
             map.putAll(tempMap.getBody());
             return new ResponseEntity<>(map, tempMap.getStatusCode());
@@ -100,5 +100,5 @@ public class AppointmentController {
         }
         return appointmentService.cancelAppointment(id,token);
     }
-
+    */
 }

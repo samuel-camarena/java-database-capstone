@@ -1,5 +1,9 @@
 package com.project.back_end.services;
 
+import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
+
 public class Service {
 // 1. **@Service Annotation**
 // The @Service annotation marks this class as a service component in Spring. This allows Spring to automatically detect it through component scanning
@@ -10,6 +14,9 @@ public class Service {
 // and ensures that all required dependencies are provided at object creation time.
 
 // 3. **validateToken Method**
+    public ResponseEntity<Map<String, String>> validateToken(String token, String msg) {
+        return null;
+    }
 // This method checks if the provided JWT token is valid for a specific user. It uses the TokenService to perform the validation.
 // If the token is invalid or expired, it returns a 401 Unauthorized response with an appropriate error message. This ensures security by preventing
 // unauthorized access to protected resources.
