@@ -1,8 +1,11 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.back_end.utils.ApplicationHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Admin {
@@ -15,6 +18,9 @@ public class Admin {
     private String username;
     
     @NotNull(message = "Password cannot be null")
+    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
+    @Pattern(regexp = ApplicationHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
+        "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     
