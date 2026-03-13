@@ -4,7 +4,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,14 +36,25 @@ public class Prescription {
     @Size(max = 200, message = "Doctor notes must be maximum 200 characters")
     private String doctorNotes;
     
+    @PositiveOrZero
+    private int refillCount;
+    
+    @NotBlank(message = "Pharmacy name cannot be blank")
+    @Size(min = 3, max = 100, message = "Pharmacy name must be between 3 and 100 characters")
+    private String pharmacyName;
+    
     public Prescription() {}
     
-    public Prescription(long id, String patientName, long appointmentId, String medication, String dosage) {
+    public Prescription(long id, String patientName, long appointmentId, String medication,
+                        String dosage, String doctorNotes, int refillCount, String pharmacyName) {
         this.id = id;
         this.patientName = patientName;
         this.appointmentId = appointmentId;
         this.medication = medication;
         this.dosage = dosage;
+        this.doctorNotes = doctorNotes;
+        this.refillCount = refillCount;
+        this.pharmacyName = pharmacyName;
     }
     
     public long getId() {
@@ -90,6 +103,22 @@ public class Prescription {
     
     public void setDoctorNotes(String doctorNotes) {
         this.doctorNotes = doctorNotes;
+    }
+    
+    public int getRefillCount() {
+        return refillCount;
+    }
+    
+    public void setRefillCount(int refillCount) {
+        this.refillCount = refillCount;
+    }
+    
+    public String getPharmacyName() {
+        return pharmacyName;
+    }
+    
+    public void setPharmacyName(String pharmacyName) {
+        this.pharmacyName = pharmacyName;
     }
 }
 
