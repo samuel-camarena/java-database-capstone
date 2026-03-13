@@ -1,3 +1,6 @@
+# Environment settings
+.env/
+
 # Java
 .mtj.tmp/
 *.class
