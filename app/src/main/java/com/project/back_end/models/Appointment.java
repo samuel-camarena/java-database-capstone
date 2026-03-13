@@ -2,7 +2,11 @@ package com.project.back_end.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,16 +31,27 @@ public class Appointment {
     private LocalDateTime appointmentTime;
     
     @NotNull(message = "Status cannot be null")
+    @Range(min = 0, max = 1, message = "Status must be 0 (scheduled) or 1 (completed)")
     private int status;
+    
+    @NotBlank(message = "Reason for visiting cannot be blank")
+    @Size(max = 200, message = "Reason for visiting must be maximum 200 characters")
+    private String reasonForVisiting;
+    
+    @Size(max = 200, message = "Notes must be maximum 200 characters")
+    private String notes;
     
     public Appointment() {}
     
-    public Appointment(long id, Doctor doctor, Patient patient, LocalDateTime appointmentTime, int status) {
+    public Appointment(long id, Doctor doctor, Patient patient, LocalDateTime appointmentTime,
+                       int status, String reasonForVisiting, String notes) {
         this.id = id;
         this.doctor = doctor;
         this.patient = patient;
         this.appointmentTime = appointmentTime;
         this.status = status;
+        this.reasonForVisiting = reasonForVisiting;
+        this.notes = notes;
     }
     
     public long getId() {
@@ -77,6 +92,22 @@ public class Appointment {
     
     public void setStatus(int status) {
         this.status = status;
+    }
+    
+    public String getReasonForVisiting() {
+        return reasonForVisiting;
+    }
+    
+    public void setReasonForVisiting(String reasonForVisiting) {
+        this.reasonForVisiting = reasonForVisiting;
+    }
+    
+    public String getNotes() {
+        return notes;
+    }
+    
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
     
     @Transient
