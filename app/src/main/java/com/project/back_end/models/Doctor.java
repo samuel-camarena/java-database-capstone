@@ -1,12 +1,12 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.back_end.utils.ApplicationHelper;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -26,13 +26,15 @@ public class Doctor {
     private String specialty;
     
     @NotNull(message = "Email cannot be null")
-    //@UniqueElements(message = "Email must be unique")
-    @Pattern(regexp = "@", message = "Email must ...")
-    @Email
+    @UniqueElements(message = "Email must be unique")
+    @Email(regexp = ApplicationHelper.EMAIL_VALIDATION_REGEX,
+        message = "Email address must have a valid format")
     private String email;
     
     @NotNull(message = "Password cannot be null")
-    @Size(min = 6, message = "Password must be minimum 6 characters")
+    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
+    @Pattern(regexp = ApplicationHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
+        "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     
@@ -43,6 +45,18 @@ public class Doctor {
     @NotNull(message = "Available times cannot be null")
     @ElementCollection
     private List<String> availableTimes; // Example: "09:00 -10:00")
+    
+    @NotNull(message = "Years of experience cannot be null")
+    @Range(min = 0, max = 99, message = "Years of experience must be between 0 and 99 years")
+    private int yearsOfExperience;
+    
+    @NotNull(message = "Clinic address cannot be null")
+    @Size(max = 255, message = "Address must be maximum 255 characters")
+    private String clinicAddress;
+    
+    @Positive
+    @Range(min = 1, max = 5, message = "Rating must be between 1 and 5 stars")
+    private double rating;
     
     public Doctor() {}
     
@@ -110,6 +124,30 @@ public class Doctor {
     
     public void setAvailableTimes(List<String> availableTimes) {
         this.availableTimes = availableTimes;
+    }
+    
+    public int getYearsOfExperience() {
+        return yearsOfExperience;
+    }
+    
+    public void setYearsOfExperience(int yearsOfExperience) {
+        this.yearsOfExperience = yearsOfExperience;
+    }
+    
+    public String getClinicAddress() {
+        return clinicAddress;
+    }
+    
+    public void setClinicAddress(String clinicAddress) {
+        this.clinicAddress = clinicAddress;
+    }
+    
+    public double getRating() {
+        return rating;
+    }
+    
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
 
