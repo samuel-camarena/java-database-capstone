@@ -43,9 +43,8 @@ public class Appointment {
     
     public Appointment() {}
     
-    public Appointment(long id, Doctor doctor, Patient patient, LocalDateTime appointmentTime,
+    public Appointment(Doctor doctor, Patient patient, LocalDateTime appointmentTime,
                        int status, String reasonForVisiting, String notes) {
-        this.id = id;
         this.doctor = doctor;
         this.patient = patient;
         this.appointmentTime = appointmentTime;
