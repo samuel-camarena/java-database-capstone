@@ -1,0 +1,43 @@
+/*
+ * Daily Appointment Report by Doctor
+ */
+
+-- Select Database to be used
+USE smartcare_coursera;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetDailyAppointmentReportByDoctor(
+    IN report_date DATE
+)
+BEGIN
+    SELECT
+        d.name AS doctor_name,
+        a.appointment_time,
+        a.status,
+        p.name AS patient_name,
+        p.phone AS patient_phone
+    FROM
+        appointment a
+    JOIN
+        doctor d ON a.doctor_id = d.id
+    JOIN
+        patient p ON a.patient_id = p.id
+    WHERE
+        DATE(a.appointment_time) = report_date
+    ORDER BY
+        d.name, a.appointment_time;
+END$$
+
+DELIMITER ;
+
+-- Example of execution of the stored procedure
+CALL GetDailyAppointmentReportByDoctor('2025-04-15');
+
+/*
+Execution result:
+# doctor_name	  appointment_time	          status    patient_name	patient_phone
+Dr. Ava Hall	  2025-04-15 11:00:00.000000  1         Lucas Turner	889-666-6666
+Dr. Mark Johnson  2025-04-15 12:00:00.000000  1	        Michael Jordan	888-444-4444
+Dr. Mark Johnson  2025-04-15 13:00:00.000000  1	        Olivia Moon	    888-555-5555
+*/
