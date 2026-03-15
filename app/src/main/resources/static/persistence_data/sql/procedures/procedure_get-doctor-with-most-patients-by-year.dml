@@ -1,0 +1,37 @@
+/*
+ * Doctor with Most Patients by Year
+ */
+
+-- Select Database to be used
+USE smartcare_coursera;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetDoctorWithMostPatientsByYear(
+    IN input_year INT
+)
+BEGIN
+    SELECT
+        doctor_id,
+        COUNT(patient_id) AS patients_seen
+    FROM
+        appointment
+    WHERE
+        YEAR(appointment_time) = input_year
+    GROUP BY
+        doctor_id
+    ORDER BY
+        patients_seen DESC
+    LIMIT 1;
+END $$
+
+DELIMITER ;
+
+-- Example of execution of the stored procedure
+CALL GetDoctorWithMostPatientsByYear(2025);
+
+/*
+Execution result:
+doctor_id	patients_seen
+1			34
+*/
