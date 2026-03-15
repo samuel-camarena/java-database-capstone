@@ -45,9 +45,8 @@ public class Prescription {
     
     public Prescription() {}
     
-    public Prescription(long id, String patientName, long appointmentId, String medication,
+    public Prescription(String patientName, long appointmentId, String medication,
                         String dosage, String doctorNotes, int refillCount, String pharmacyName) {
-        this.id = id;
         this.patientName = patientName;
         this.appointmentId = appointmentId;
         this.medication = medication;
