@@ -56,9 +56,8 @@ public class Patient {
     
     public Patient() {}
     
-    public Patient(long id, String name, String email, String password, String phone, String address,
+    public Patient(String name, String email, String password, String phone, String address,
                    LocalDate dateOfBirth, String emergencyContact, String insuranceProvider) {
-        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
