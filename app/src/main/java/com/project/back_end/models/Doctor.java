@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.List;
 
 @Entity
@@ -44,7 +42,7 @@ public class Doctor {
     
     @NotNull(message = "Available times cannot be null")
     @ElementCollection
-    private List<String> availableTimes; // Example: "09:00 -10:00")
+    private List<String> availableTimes;
     
     @NotNull(message = "Years of experience cannot be null")
     @Range(min = 0, max = 99, message = "Years of experience must be between 0 and 99 years")
@@ -60,14 +58,17 @@ public class Doctor {
     
     public Doctor() {}
     
-    public Doctor(long id, String name, String specialty, String email, String password, String phone, List<String> availableTimes) {
-        this.id = id;
+    public Doctor(String name, String specialty, String email, String password, String phone,
+                  List<String> availableTimes, int yearsOfExperience, String clinicAddress, double rating) {
         this.name = name;
         this.specialty = specialty;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.availableTimes = availableTimes;
+        this.yearsOfExperience = yearsOfExperience;
+        this.clinicAddress = clinicAddress;
+        this.rating = rating;
     }
     
     public long getId() {
