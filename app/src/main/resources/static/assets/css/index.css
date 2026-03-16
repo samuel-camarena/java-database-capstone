@@ -1,16 +1,39 @@
 /* this is the style sheet file for index.html  */
-
+/*
+    # Global Reset (`*`)
+    - Purpose: Ensure consistent layout across all browsers.
+    - Properties:
+        - `margin: 0` — removes default outer spacing from all elements.
+        - `padding: 0` — removes default inner spacing.
+        - `box-sizing: border-box` — ensures padding and borders are included within the total width/height of elements.
+*/
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box; /* Include padding and border inside the element size. */
 }
 
+/*
+    # Base HTML & Body (`html, body`)
+    - Purpose: Establish a full-height layout and apply a standard font across the page.
+    - Properties:
+        - `height: 100%` — allows containers to stretch to the full viewport height.
+        - `font-family: Roboto, sans-serif` — applies a clean, readable sans-serif font.
+*/
 html, body {
     height: 100%;
     font-family: Roboto; /* 'Roboto'` sans-serif font for modern, clean typography. */
 }
 
+/*
+    # Section Heading (`h2`)
+    - Purpose: Style the headings prominently for section separation.
+    - Properties:
+        - `font-size: 48px` — makes the heading large and noticeable.
+        - `font-weight: bold` — emphasizes text.
+        - `margin-bottom: 50px` — creates space below the heading.
+        - `color: #003e3e` — uses a strong teal for visual anchoring.
+*/
 h2 {
     font-size: 48px; /* Large font size (`48px`) for prominence. */
     font-weight: bold;
@@ -19,6 +42,20 @@ h2 {
     margin-bottom: 50px;
 }
 
+/*
+    # Primary Button (`button`)
+    - Purpose: Design prominent, interactive buttons for main actions.
+    - Properties:
+        - `width: 200px` — ensures consistent button width.
+        - `border: none` — removes any outline/border.
+        - `border-radius: 12px` — creates rounded corners.
+        - `padding: 10px 20px` — gives space inside the button.
+        - `margin-top: 10px` — adds spacing above the button.
+        - `font-size: 16px` — makes the text readable.
+        - `color: white` — makes text stand out.
+        - `background-color: #015c5d` — sets a Teal green color.
+        - `cursor: pointer` — shows a hand icon on hover.
+*/
 button {
     width: 200px;
     border: none;
@@ -26,35 +63,56 @@ button {
     padding: 10px 20px;
     margin-top: 10px;
     font-size: 16px;
-    color: #FFFFFF;
-    background: #015c5d; /* Teal green. */
-    pointer-cursor: "enable";
-    cursor: pointer; /* Transforms the arrow cursor on a hand, when hover the button. */
+    color: white;
+    background: #015c5d;
+    cursor: pointer;
 }
 
 button:hover {
     background: #A62B1F;
 }
 
+/*
+    # Main Layout Wrapper (`.wrapper`)
+    - Purpose: Create a flexible, vertical layout that fills the entire screen.
+    - Properties:
+        - `display: flex` — enables flexbox for layout control.
+        - `flex-direction: column` — stacks children vertically.
+        - `min-height: 100vh` — ensures the wrapper always covers full screen height.
+*/
 .wrapper {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
+/*
+    # Main Content Section (`.main-content`)
+    - Purpose: Layout the main content with padding and a background image.
+    - Properties:
+        - `flex-grow: 1` — lets the content fill the available vertical space.
+        - `padding: 40px` — adds internal spacing around content.
+        - `display: flex` and `flex-direction: column` — organizes content in a vertical stack.
+        - `justify-content: center` — Align (center) the items on the main axis (horizontally).
+        - `align-items: center` - Align (center) the items on the main axis (horizontally).
+        - `background-image: url("index.png")` — sets a full-screen dashboard background.
+        - `background-size: cover` — ensures the image covers the whole section.
+        - `background-position: center` — centers the image.
+        - `background-repeat: no-repeat` — avoids tiling the image.
+        - `background-attachment: fixed` — fixes the image while scrolling.
+*/
 .main-content {
-    border: red 1px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    align-items: center; /* Align the items on the main axis (horizontally). */
-    justify-content: center; /* Specifies how flex lines are distributed along the cross axis (vertically) */
-    position: inherit;
     padding: 40px;
+    align-items: center;
+    justify-content: center;
     background-image: url("../images/defineRole/index.png");
     background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* Keep image fixed still during scroll, and No-repeat itself to fill gaps. */
+    background-attachment: fixed;
 }
 
 .dashboard-btn {
