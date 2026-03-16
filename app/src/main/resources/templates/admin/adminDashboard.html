@@ -12,6 +12,9 @@ search, filter, and modal functionality.
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../../static/assets/css/style.css" />
     <link rel="stylesheet" href="../../static/assets/css/adminDashboard.css" />
+
+    <link rel="stylesheet" th:href="@{../../assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{../../assets/css/adminDashboard.css}">
     <script th:src="@{./js/util.js}" defer></script>
     <script th:src="@{./js/render.js}" defer></script>
     <script th:src="@{./js/components/header.js}" defer></script>
@@ -29,7 +32,7 @@ search, filter, and modal functionality.
         <div class="wrapper">
             <div id="headerDiv"></div>
             <main class="main-content">
-                <input id="searchBar" type="text" placeholder="Search..">
+                <input id="searchBar" class="searchBar" type="text" placeholder="Search..">
                 <select id="searchTimeSelect" >Select Time</select>
                 <select id="searchSpecialtySelect" >Select Specialty</select>
                 <div id="mainContentDiv"></div>
