@@ -1,65 +1,101 @@
 /* This is the style sheet for the doctorDashboard.html */
-/* 
-**Table Header (`.table-header`)**
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
 
-* Set font size to `24px` for clear emphasis.
-* Use a dark teal color (`#015c5d`) for consistency with the theme.
-* Add `30px` bottom margin and remove right margin.
+thead {
+    background: #333310;
+    color: white;
+}
 
-**Table Styling (`table`)**
+td, th {
+    padding: 12px 16px;
+    align-text: center;
+    border-bottom: 1px solid #ddd;
+}
 
-* Make the table full width (`100%`).
-* Collapse borders for clean lines.
-* Use a `sans-serif` font.
-* Add `20px` top margin for spacing.
+tr {
+    even-rows: #f9f9f959;
+    odd-rows: #ffffc0;
+}
 
-**Table Head (`thead`)**
+/* Zebra striping */
+tbody tr:nth-child(odd) {
+    background: #eeeeee;
+}
 
-* Set a very light dark background (`#33333310`) for header row.
-* Use white text color (`#fff`).
+/*
+    # Content alignment to the right for cells containing numbers.
+    - Cell(1): Patient ID (number).
+    - Cell(3): Patient phone (number).
+*/
+tbody tr :nth-child(1),
+tbody tr :nth-child(3){
+    text-align: right;
+    width: 15%;
+}
 
-**Table Cells (`td, th`)**
+/*
+    # Content alignment to the left for cells containing text.
+    - Cell(2): Patient name (text).
+    - Cell(4): Patient email (text).
+    - Cell(5): Patient prescription (text).
+*/
+tbody tr :nth-child(2),
+tbody tr :nth-child(4),
+tbody tr :nth-child(5) {
+    text-align: left;
+    width: 35%;
+}
 
-* Apply padding of `12px 16px` for spacing.
-* Center-align the text.
-* Add a subtle bottom border (`1px solid #ddd`).
+tr:hover {
+    background: #015c5d39;
+}
 
-**Table Row Styling**
+.table-header {
+    font-size: 24px;
+    color: #015c5d;
+    margin-bottom: 30px;
+    margin-right: 0px;
+}
 
-* Alternate row colors for better readability:
+.prescription-btn {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
 
-  * Even rows: semi-transparent light grey (`#f9f9f959`).
-  * Odd rows: soft white background (`#ffffffc0`).
-* On hover: highlight row with a light teal overlay (`#015c5d39`).
+.prescription-btn:hover {
+    scale(1.1);
+    appearance: brighter;
+}
 
-**Prescription Button (`.prescription-btn`)**
+.prescription-btn:onclick {
+    scale(0.95);
+    appearance: brighter;
+}
 
-* Set size to `30px x 30px`.
-* Make it interactive with a pointer cursor.
-* Add transition effects for scale and brightness on hover.
-* On hover:
+.noPatientRecord {
+    font-size: 16px;
+    color: grey;
+}
 
-  * Slightly enlarge (`scale(1.1)`)
-  * Brighten appearance
-* On click: slightly shrink (`scale(0.95)`).
+.today-btn {
+    margin-right: 10px;
+    padding: 10px;
+    background: #015c5d;
+}
 
-**No Record Message (`.noPatientRecord`)**
-
-* Use a `16px` italic grey font to indicate no data gently.
-
-**Today Button (`.today-btn`)**
-
-* Add right margin (`10px`).
-* Add padding (`10px`).
-* Set background color to teal green (`#015c5d`).
-
-**Date Picker (`.date-picker`)**
-
-* Add left margin (`10px`) and top margin (`13px`).
-* Round corners with `8px` radius.
-* Add padding (`10px`) and set fixed height (`30px`).
-
----
-
+.date-picker {
+    height: 30px;
+    margin-left: 10px;
+    margin-top: 13px;
+    border-radius: 8px;
+    padding: 10px;
+}
+/*
 Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
  */
