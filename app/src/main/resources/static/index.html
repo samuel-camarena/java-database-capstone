@@ -2,19 +2,14 @@
 # index.html
 This file allows users to select a role (Admin, Patient, Doctor) and triggers modal-based login functionality.
  -->
-<!-- 2. Declare Document Type
-
-    * Use the declaration for HTML5 so browsers know how to render the page correctly.
-    * Begin the HTML structure and set the document language to English to improve accessibility and SEO `lang="en"`.
--->
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Select Role</title>
         <link rel="icon" href="./assets/images/logo/logo.png" />
-        <link rel="stylesheet" href="./assets/css/index.css" />
         <link rel="stylesheet" href="./assets/css/style.css" />
+        <link rel="stylesheet" href="./assets/css/index.css" />
         <script src="./js/util.js" defer></script>
         <script src="./js/render.js" defer></script>
         <script src="./js/components/header.js" defer></script>
@@ -26,9 +21,9 @@ This file allows users to select a role (Admin, Patient, Doctor) and triggers mo
                     <div id="headerDiv"></div>
                     <main class="main-content">
                         <h2>Select Your Role</h2>
-                        <button id="adminButton" onclick="">Admin</button>
-                        <button id="patientButton" onclick="">Patient</button>
-                        <button id="doctorButton" onclick="">Doctor</button>
+                        <button id="adminButton" onclick="setRole('admin')">Admin</button>
+                        <button id="patientButton" onclick="setRole('patient')">Patient</button>
+                        <button id="doctorButton" onclick="setRole('doctor')">Doctor</button>
                     </main>
                     <div id="footerDiv"></div>
                 </div>
@@ -37,11 +32,6 @@ This file allows users to select a role (Admin, Patient, Doctor) and triggers mo
             <div id="modalDialogBodyDiv"></div>
             <button id="closeModalDialogButton">Close</button>
         </div>
-        <!--
-            19. Load Page-Specific Logic Module
-                * Use a `<script type="module">` tag to load the role selection logic (e.g., `index.js`).
-                * Ensure it’s deferred so it doesn’t block HTML rendering.
-        -->
         <script type="module" src="./js/services/index.js" defer></script>
     </body>
 </html>
