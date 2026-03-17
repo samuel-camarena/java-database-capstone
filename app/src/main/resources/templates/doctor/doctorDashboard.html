@@ -36,13 +36,35 @@ their patient appointments, search records, and access patient prescriptions.
         <div id="headerDiv"></div>
         <main class="main-content">
             <input id="searchBar" class="searchBar" type="text" placeholder="Search Bar for custom output">
-            <select id="searchTimeSelect" >Select Time</select>
-            <select id="searchSpecialtySelect" >Select Specialty</select>
-            <button id="todayButton">Today's Appointments</button>
-            <input type="date" id="datePicker"></input>
+            <div class="filter-wrapper" style="">
+                <select id="searchTimeSelect" class="filter-select" >
+                    <option value="">Sort by Time</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+                <select id="searchSpecialtySelect" class="filter-select" >
+                    <option value="">Filter by Specialty</option>
+                    <option value="Cardiologist">Cardiologist</option>
+                    <option value="Dermatologist">Dermatologist</option>
+                    <option value="Neurologist">Neurologist</option>
+                    <option value="Pediatrician">Pediatrician</option>
+                    <option value="Orthopedic">Orthopedic</option>
+                    <option value="Gynecologist">Gynecologist</option>
+                    <option value="Psychiatrist">Psychiatrist</option>
+                    <option value="Dentist">Dentist</option>
+                    <option value="Ophthalmologist">Ophthalmologist</option>
+                    <option value="Ent">ENT Specialist</option>
+                    <option value="Urologist">Urologist</option>
+                    <option value="Oncologist">Oncologist</option>
+                    <option value="Gastroenterologist">Gastroenterologist</option>
+                    <option value="General">General Physician</option>
+                </select>
+                <button id="todayButton" class="today-btn">Today's Appointments</button>
+                <input type="date" id="datePicker" class="date-picker"></input>
+            </div>
             <div id="mainContentDiv"></div>
             <table id="doctorTable">
-                <thead>
+                <thead class="table-header">
                     <tr>
                         <th>Patient ID</th>
                         <th>Name</th>
