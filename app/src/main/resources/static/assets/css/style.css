@@ -85,7 +85,7 @@
     background-color: #f4f4f4;
     color: #fff;
     padding: 40px 20px;
-    border-top: 2px solid #f4f4f4;
+    border-top: 2px solid #ccc;
     
   }
   
@@ -327,7 +327,7 @@
 }
 
 .filter-wrapper {
-  width: 350px;
+  /* width: 350px; */
   display: flex;
   flex-direction: row;
   
@@ -335,7 +335,7 @@
 
 .filter-select {
   margin-right: 8px;
-  width: 100%;
+  /* width: 100%; */
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
