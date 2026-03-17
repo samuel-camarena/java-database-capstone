@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="../assets/images/logo/logo.png" />
-    <title>PatientDashboard</title>
+    <title>Patient Dashboard</title>
     <link rel="stylesheet" href="../assets/css/adminDashboard.css">
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/patientDashboard.css">
@@ -19,16 +19,18 @@
 <body onload="renderContent()">
     <div class="container">
         <div class="wrapper">
-            <div id="header"></div>
+            <div id="headerDiv"></div>
             <main class="main-content">
                 <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
                 <div class="filter-wrapper">
-                    <select class="filter-select" id="filterTime">
+                    <!-- <select class="filter-select" id="filterTime"> -->
+                    <select id="searchTimeSelect" class="filter-select">
                         <option value="">Sort by Time</option>
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                     </select>
-                    <select class="filter-select" id="filterSpecialty">
+                    <!-- <select class="filter-select" id="filterSpecialty"> -->
+                    <select id="searchSpecialtySelect" class="filter-select">
                         <option value="">Filter by Specialty</option>
                         <option value="Cardiologist">Cardiologist</option>
                         <option value="Dermatologist">Dermatologist</option>
@@ -48,13 +50,14 @@
                 </div>
                 <div id="content"></div>
             </main>
-            <div id="footer"></div>
+            <div id="footerDiv"></div>
         </div>
     </div>
-    <div id="modal" class="modal">
-        <div class="modal-content">
+    <!-- <div id="modal" class="modal"> -->
+    <div id="modalDialogDiv" class="modal">
+        <div id="modalDialogContainerDiv" class="modal">
             <span class="close" id="closeModal">&times;</span>
-            <div id="modal-body"></div>
+            <div id="modalDialogBodyDiv" class="modal-content"></div>
         </div>
     </div>
     <script type="module" src="../js/patientDashboard.js" defer></script>
