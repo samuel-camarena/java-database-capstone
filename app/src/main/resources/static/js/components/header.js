@@ -13,12 +13,11 @@ function renderHeader() {
                 <span class="logo-title">Hospital CMS</span>
             </div>`;
 
-    if (window.location.pathname.endsWith("/")) {
+    if (window.location.pathname.endsWith("/") || getRole() == null || getRole() == undefined) {
         headerDiv.innerHTML = headerContent + '</header>';
-        logout();
+        resetUserSession();
         return;
     }
-
 
     const role = localStorage.getItem("userRole");
     const token = localStorage.getItem("token");
@@ -71,9 +70,13 @@ function attachHeaderButtonListeners() {
 
 }
 
-function logout() {
+function resetUserSession() {
     localStorage.removeItem("userRole");
     localStorage.removeItem("token");
+}
+
+function logout() {
+    resetUserSession();
     //window.location.href = "/";
     window.location.href = "http://localhost:63342/coursera-java-c11-java-capstone-project/back-end/static/index.html?_ijt=qvqb49rndq2kp1qs1rut7aebv4&_ij_reload=RELOAD_ON_SAVE";
 }
