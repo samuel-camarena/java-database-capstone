@@ -40,9 +40,11 @@ search, filter, and modal functionality.
             <div id="footerDiv"></div>
         </div>
     </div>
-    <div id="modalDialogContainerDiv" class="modal">
-    <div id="modalDialogBodyDiv" class="modal-content"></div>
-        <button id="closeModalDialogBtn">&times;</button>
+    <div id="modalDialogDiv" class="modal">
+        <div id="modalDialogContainerDiv" class="modal">
+            <span class="close" id="closeModal">&times;</span>
+            <div id="modalDialogBodyDiv" class="modal-content"></div>
+        </div>
     </div>
     <script type="module" th:src="@{../../static/js/adminDashboard.js}" defer></script>
     <script type="module" th:src="@{../../static/js/components/doctorCard.js}" defer></script>
