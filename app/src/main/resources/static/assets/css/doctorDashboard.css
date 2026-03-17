@@ -55,6 +55,20 @@ tr:hover {
     background: #015c5d39;
 }
 
+.today-btn {
+    margin-right: 10px;
+    padding: 10px;
+    background: #015c5d;
+}
+
+.date-picker {
+    height: 30px;
+    margin-left: 10px;
+    margin-top: 13px;
+    border-radius: 8px;
+    padding: 10px;
+}
+
 .table-header {
     font-size: 24px;
     color: #015c5d;
@@ -69,12 +83,12 @@ tr:hover {
 }
 
 .prescription-btn:hover {
-    scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1);
     appearance: brighter;
 }
 
 .prescription-btn:onclick {
-    scale(0.95);
+    transform: translate(-50%, -50%) scale(0.95);
     appearance: brighter;
 }
 
@@ -83,19 +97,6 @@ tr:hover {
     color: grey;
 }
 
-.today-btn {
-    margin-right: 10px;
-    padding: 10px;
-    background: #015c5d;
-}
-
-.date-picker {
-    height: 30px;
-    margin-left: 10px;
-    margin-top: 13px;
-    border-radius: 8px;
-    padding: 10px;
-}
 /*
 Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
  */
