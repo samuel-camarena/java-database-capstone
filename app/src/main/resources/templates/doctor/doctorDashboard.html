@@ -59,11 +59,11 @@ their patient appointments, search records, and access patient prescriptions.
                     <option value="Gastroenterologist">Gastroenterologist</option>
                     <option value="General">General Physician</option>
                 </select>
-                <button id="todayButton" class="today-btn">Today's Appointments</button>
+                <button id="todayBtn" class="today-btn">Today's Appointments</button>
                 <input type="date" id="datePicker" class="date-picker"></input>
             </div>
             <div id="mainContentDiv"></div>
-            <table id="doctorTable">
+            <table id="appointmentsTable">
                 <thead class="table-header">
                     <tr>
                         <th>Patient ID</th>
@@ -73,7 +73,7 @@ their patient appointments, search records, and access patient prescriptions.
                         <th>Prescription</th>
                     </tr>
                 </thead>
-                <tbody id="patientTableBody"></tbody>
+                <tbody id="appointmentsTableBody"></tbody>
             </table>
         </main>
         <div id="footerDiv"></div>
