@@ -61,7 +61,7 @@ export async function saveDoctor(doctor, token) {
         return { success: response.ok, message: result.message }
     } catch (Exception e) {
         console.error("Error :: saveDoctor :: ", error)
-        return { success: false, message: error.message }
+        return { success: false, message: error.message, doctor: null }
     }
 }
 
@@ -112,9 +112,9 @@ export async function filterDoctors(name ,time ,specialty) {
         if(!response.ok) {
             throw new Error(result.message);
         }
-        return { success: response.ok, message: result.message }
+        return { success: response.ok, message: result.message, doctors: result.doctors }
     } catch (Exception e) {
         console.error("Error :: filterDoctors :: ", error)
-        return { success: false, message: error.message }
+        return { success: false, message: error.message, doctors: [] }
     }
 }
