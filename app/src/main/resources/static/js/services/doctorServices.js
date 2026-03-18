@@ -7,7 +7,7 @@ export async function getDoctors() {
         const response = await fetch(`${DOCTOR_API}`);
         const result = await response.json();
         if(!response.ok) {
-
+            throw new Error(result.message);
         }
         return { success: response.ok, message: result.message, result.doctors}
     } catch (error) {
