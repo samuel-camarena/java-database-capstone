@@ -1,54 +1,107 @@
+import { getAllAppointments } from "./services/appointmentRecordService.js";
+import { createPatientRow } from "./components/patientRows.js";
+
+const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+const datePicker = document.getElementById('datePicker')
+if(datePicker) {
+    datePicker.setDate = Time.today(); //   Initialize selectedDate with today's date in 'YYYY-MM-DD' format
+}
+
+const token = localStorage.getItem("token");
+const selectedDate = null;
+const patientName = null;
+
+const searchBar = document.getElementById('searchBar');
+if(searchBar) {
+    searchBar.addEventListener("input", filterAppointmentsOnChange);
+}
+
+const searchTimeSelect = document.getElementById('searchTimeSelect');
+if(searchTimeSelect) {
+    searchTimeSelect.addEventListener("change", filterAppointmentsOnChange);
+}
+
+const searchSpecialtySelect = document.getElementById('searchSpecialtySelect');
+if(searchSpecialtySelect) {
+    searchSpecialtySelect.addEventListener("change", filterAppointmentsOnChange);
+}
+
+function async filterAppointmentsOnChange() {
+    try {
+        const searchValue = searchBar.value.trim(); // Trim and check the input value
+        //const searchValue = document.getElementById("searchBar").value.trim()
+        const timeValue = searchTimeSelect.value;
+        const specialtyValue = searchSpecialtySelect.value;
+
+        const name = searchValue.length > 0 ? searchValue : null;
+        const time = timeValue.length > 0 ? timeValue : null;
+        const specialty = specialtyValue.length > 0 ? specialtyValue : null;
+
+        loadAppointments();
+    } catch (error) {
+        console.error("Error :: filterAppointmentsOnChange :: " + error);
+    }
+}
+
+const todayBtn = document.getElementById('todayBtn');
+if(todayBtn) {
+    todayBtn.addEventListener("click", () => {
+        const datePicker = document.getElementById('datePicker')
+        if(datePicker) {
+            selectedDate = Time.today();
+            datePicker.setDate = Time.today(); //   Initialize selectedDate with today's date in 'YYYY-MM-DD' format
+        }
+    });
+
+    loadAppointments();
+}
+
+const datePicker = document.getElementById('datePicker');
+if(datePicker) {
+    datePicker.addEventListener("change", () => {
+        selectedDate = datePicker.getValue();
+        loadAppointments();
+    });
+}
+
 /*
-  Import getAllAppointments to fetch appointments from the backend
-  Import createPatientRow to generate a table row for each patient appointment
+    Fetch and display appointments based on selected date and optional patient name
+*/
+function async loadAppointments() {
+    try {
+        const result = await getAllAppointments(selectedDate, patientName, token);
+        if(!appointmentsTableBody) {
+            alert("❌ No table body to display appointments!");
+            console.error("Error :: loadAppointments :: No table body to display appointments!");
+            return;
+        }
+        appointmentsTableBody.innerHTML = "";
 
+        if(!result.success) {
+            appointmentsTableBody.innerHTML = "<p>No Appointments found for today.</p>";
+            return;
+        }
 
-  Get the table body where patient rows will be added
-  Initialize selectedDate with today's date in 'YYYY-MM-DD' format
-  Get the saved token from localStorage (used for authenticated API calls)
-  Initialize patientName to null (used for filtering by name)
+        result.appointments.forEach(appoint => {
+            const patient = {
+                id: appoint.id,
+                name: appoint.name,
+                phone: appoint.phone,
+                email: appoint.email
+            };
+            const row = createPatientRow(appoint);
+            appointmentsTableBody.appendChild(row);
+        };
+    } catch (error) {
+        appointmentsTableBody.innerHTML = "<p>Error loading appointments. Try again later.</p>";
+        console.error("Error :: loadAppointments :: " + error);
+    }
+}
 
-
-  Add an 'input' event listener to the search bar
-  On each keystroke:
-    - Trim and check the input value
-    - If not empty, use it as the patientName for filtering
-    - Else, reset patientName to "null" (as expected by backend)
-    - Reload the appointments list with the updated filter
-
-
-  Add a click listener to the "Today" button
-  When clicked:
-    - Set selectedDate to today's date
-    - Update the date picker UI to match
-    - Reload the appointments for today
-
-
-  Add a change event listener to the date picker
-  When the date changes:
-    - Update selectedDate with the new value
-    - Reload the appointments for that specific date
-
-
-  Function: loadAppointments
-  Purpose: Fetch and display appointments based on selected date and optional patient name
-
-  Step 1: Call getAllAppointments with selectedDate, patientName, and token
-  Step 2: Clear the table body content before rendering new rows
-
-  Step 3: If no appointments are returned:
-    - Display a message row: "No Appointments found for today."
-
-  Step 4: If appointments exist:
-    - Loop through each appointment and construct a 'patient' object with id, name, phone, and email
-    - Call createPatientRow to generate a table row for the appointment
-    - Append each row to the table body
-
-  Step 5: Catch and handle any errors during fetch:
-    - Show a message row: "Error loading appointments. Try again later."
-
-
-  When the page is fully loaded (DOMContentLoaded):
-    - Call renderContent() (assumes it sets up the UI layout)
-    - Call loadAppointments() to display today's appointments by default
+document.addEventListener("DOMContentLoaded", renderContent);
+document.addEventListener("DOMContentLoaded", loadAppointments);
+/*
+document.addEventListener("DOMContentLoaded", () => {
+  loadAppointments();
+});
 */
