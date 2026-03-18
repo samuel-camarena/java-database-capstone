@@ -33,8 +33,30 @@ search, filter, and modal functionality.
             <div id="headerDiv"></div>
             <main class="main-content">
                 <input id="searchBar" class="searchBar" type="text" placeholder="Search..">
-                <select id="searchTimeSelect" >Select Time</select>
-                <select id="searchSpecialtySelect" >Select Specialty</select>
+                <div class="filter-wrapper" style="">
+                    <select id="searchTimeSelect" class="filter-select" >
+                        <option value="">Sort by Time</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                    <select id="searchSpecialtySelect" class="filter-select" >
+                        <option value="">Filter by Specialty</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Dentist">Dentist</option>
+                        <option value="Ophthalmologist">Ophthalmologist</option>
+                        <option value="Ent">ENT Specialist</option>
+                        <option value="Urologist">Urologist</option>
+                        <option value="Oncologist">Oncologist</option>
+                        <option value="Gastroenterologist">Gastroenterologist</option>
+                        <option value="General">General Physician</option>
+                    </select>
+                </div>
                 <div id="mainContentDiv"></div>
             </main>
             <div id="footerDiv"></div>
