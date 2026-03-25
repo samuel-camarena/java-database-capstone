@@ -1,7 +1,7 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.back_end.utils.ApplicationHelper;
+import com.project.back_end.utils.AppHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Range;
@@ -25,13 +25,13 @@ public class Doctor {
     
     @NotNull(message = "Email cannot be null")
     @UniqueElements(message = "Email must be unique")
-    @Email(regexp = ApplicationHelper.EMAIL_VALIDATION_REGEX,
+    @Email(regexp = AppHelper.EMAIL_VALIDATION_REGEX,
         message = "Email address must have a valid format")
     private String email;
     
     @NotNull(message = "Password cannot be null")
     @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
-    @Pattern(regexp = ApplicationHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
+    @Pattern(regexp = AppHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
         "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -149,6 +149,23 @@ public class Doctor {
     
     public void setRating(double rating) {
         this.rating = rating;
+    }
+    
+    @Override
+    @Transient
+    public String toString() {
+        return "Doctor: { " +
+            "ID: " + id +
+            ", Name: '" + name + '\'' +
+            ", Specialty: '" + specialty + '\'' +
+            ", Email: '" + email + '\'' +
+            ", Password: '" + password + '\'' +
+            ", Phone: '" + phone + '\'' +
+            ", AvailableTimes: " + availableTimes +
+            ", YearsOfExperience: " + yearsOfExperience +
+            ", ClinicAddress: '" + clinicAddress + '\'' +
+            ", Rating: " + rating +
+            " }";
     }
 }
 
