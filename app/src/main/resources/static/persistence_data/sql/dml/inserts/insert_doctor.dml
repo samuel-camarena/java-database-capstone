@@ -1,4 +1,4 @@
-INSERT INTO doctor (email, name, password, phone, specialty, years_of_experience, clinic_address, rating) VALUES
+INSERT INTO doctor (`email`, `name`, `password`, `phone`, `specialty`, `years_of_experience`, `clinic_address`, `rating`) VALUES
 ('dr.adams@example.com', 'Dr. Emily Adams', 'pass12345', '555-101-2020', 'Cardiologist', 5, '101 Oak St, Cityville', 4),
 ('dr.johnson@example.com', 'Dr. Mark Johnson', 'secure4567', '555-202-3030', 'Neurologist', 3, '202 Maple Rd, Townsville', 4.2),
 ('dr.lee@example.com', 'Dr. Sarah Lee', 'leePass987', '555-303-4040', 'Orthopedist', 11, '303 Pine Ave, Villageton', 4),
@@ -23,4 +23,5 @@ INSERT INTO doctor (email, name, password, phone, specialty, years_of_experience
 ('dr.evans@example.com', 'Dr. Lucas Evans', 'evansEv1', '555-222-3334', 'Neurologist', 7, '124 Dogwood Dr, Summit', 4),
 ('dr.turner@example.com', 'Dr. Grace Turner', 'turnerBurner', '555-333-4445', 'Orthopedist', 3, '125 Juniper Ct, Greenwood', 4),
 ('dr.hill@example.com', 'Dr. Ethan Hill', 'hillclimb', '555-444-5556', 'Pediatrician', 2, '126 Olive Rd, Ashville', 4),
-('dr.ward@example.com', 'Dr. Ruby Ward', 'wardWard', '555-555-6667', 'Dermatologist', 1, '127 Olive Rd, Ashville', 4);
+('dr.ward@example.com', 'Dr. Ruby Ward', 'wardWard', '555-555-6667', 'Dermatologist', 1, '127 Olive Rd, Ashville', 4),
+('dr.scott.jr@example.com', 'Dr. Lily Scott Jr.', 'scottishJr', '555-111-2224', 'Cardiologist', 2, '123 Hawthorn Blvd, Meadowbrook', 4);
