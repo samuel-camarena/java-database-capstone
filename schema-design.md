@@ -15,11 +15,9 @@
 #### 1.2.1. Table: admins
 
 - **id:** BIG_INT, NOT NULL, AUTO INCREMENT, PRIMARY KEY
-- **user_name:** VARCHAR(50), NOT NULL, UNIQUE
+- **user_name:** VARCHAR(100), NOT NULL, UNIQUE
 - **password:** VARCHAR(20), NOT NULL
-- **name:** VARCHAR(100), NOT NULL 
 - **email:** VARCHAR(255), UNIQUE, NOT NULL
-- **phone:** VARCHAR(10), NOT NULL, UNIQUE
 - **creation_at:** TIMESTAMP, Default CURRENT_TIMESTAMP
 
 #### 1.2.2. Table: doctors
