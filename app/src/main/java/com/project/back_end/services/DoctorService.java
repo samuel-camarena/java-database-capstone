@@ -46,7 +46,7 @@ public class DoctorService {
      * @return List<String> available time slots properly formatted: e.g. 10:00 - 11:00, 13:00 - 14:00.
      */
     @Transactional
-    public ResponseEntity<Map<String, List<String>>> getDoctorAvailability(long id, LocalDate date) throws Exception {
+    public ResponseEntity<Map<String, List<String>>> getDoctorAvailability(long id, LocalDate date) {
         try {
             if (doctorRepo.notExistsById(id)) {
                 logger.error("{}getDoctorAvailability:: {}", MessageHead.FAIL.compose(), DOCTOR_ID_NOT_EXISTS_MSG + id);
