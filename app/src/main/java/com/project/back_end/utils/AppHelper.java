@@ -1,26 +1,82 @@
 package com.project.back_end.utils;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.project.back_end.models.Doctor;
+//import com.project.back_end.utils.outputhelpers.MessageFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import static org.springframework.http.HttpStatus.CREATED;
+
 
 public class AppHelper {
+    private static final String DOCTOR_SERVICE_MSG = "DoctorService_OLD::";
+
+    private static final Logger logger = LoggerFactory.getLogger(AppHelper.class);
     
-    @Value("${email-validation-regex}")
-    public static final String EMAIL_VALIDATION_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
+    public static <T> ResponseEntity<Map<String, T>> composeResponse(
+        OperationStatus status,
+        String key,
+        T payload) throws IllegalArgumentException {
+        
+        ResponseEntity.BodyBuilder res;
+        switch(status) {
+            case SUCCESS -> { res = ResponseEntity.ok(); }
+            case CREATED -> { res = ResponseEntity.created((URI) payload); }
+            case FAIL -> { res = ResponseEntity.badRequest(); }
+            case SERVER_ERR -> { res = ResponseEntity.internalServerError(); }
+            case UNAUTHORIZED -> { res = ResponseEntity.status(HttpStatus.UNAUTHORIZED); }
+            case NOT_FOUND -> { res = ResponseEntity.status(HttpStatus.NOT_FOUND); }
+            default -> { throw new IllegalArgumentException(
+                "::composeResponse:: illegal OperationStatus Switch case value"); }
+        }
+        return res.body(Map.of(key, payload));
+    }
     
-    /*
-      OWASP Simple Password Validation Regex
-      - 4 to 8 character password requiring numbers and both lowercase and uppercase letters
-     */
-    @Value("${password-simple-validation-regex}")
-    public static final String PASSWORD_SIMPLE_VALIDATION_REGEX = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+    public static <T> void logMsg(
+        String methodName,
+        OperationStatus status,
+        String logMsg,
+        T data) throws IllegalArgumentException {
+        
+        String format = "{}:: {}";
+        String headerTitle = methodName;
+        switch(status) {
+            case SUCCESS -> {
+                if (data instanceof Integer) { // TODO: Generalizar la especificidad del DOCTOR_SERVICE_MSG -> ¿Transformation o Refactoring?
+                    logger.info(format, MessageHead.SUCCESS.compose() +  headerTitle, "Operations status: " + data);
+                } else if (data instanceof List<?> list) {
+                    logger.info(format, MessageHead.SUCCESS.compose() +  headerTitle, "Size list: " + list.size());
+                } else {
+                    logger.info(format, MessageHead.SUCCESS.compose() +  headerTitle, "No data available for logging");
+                }
+            }
+            case FAIL -> {
+                logger.error(format, MessageHead.FAIL.compose() + headerTitle, logMsg);
+            }
+            case SERVER_ERR -> {
+                logger.error(format, MessageHead.ERROR.compose() + headerTitle, logMsg);
+            }
+            case UNAUTHORIZED -> {
+                logger.error(format, MessageHead.WARNING.compose() + headerTitle, logMsg);
+            }
+            default -> {
+                throw new IllegalArgumentException(DOCTOR_SERVICE_MSG +
+                    "::composeDoctorsListResponse:: illegal OperationStatus Switch case value");
+            }
+        }
+        
+    }
     
-    /*
-      OWASP Complex Password Validation Regex
-     */
-    //@Value("${password-complex-validation-regex}")
-    public static final String PASSWORD_COMPLEX_VALIDATION_REGEX
-        = "^(?:(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])" +
-        "(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))(?!.*(.)\\1{2,})" +
-        "[A-Za-z0-9!~<>,;:_=?*+#.\"&§%°()\\|\\[\\]\\-\\$\\^\\@\\/]{12,128}$";
-    
+    public static String composeMsg(String reason, String param, String value) {
+        return String.format("%s by %s: %s", reason, param, value);
+    }
+
 }
