@@ -1,36 +1,40 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.back_end.utils.ApplicationHelper;
+import com.project.back_end.utils.AppHelper;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.springframework.beans.factory.annotation.Value;
+
+import static com.project.back_end.config.EntityConstraintsConfig.*;
 
 @Entity
 public class Admin {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @NotNull(message = "Username cannot be null")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @NotNull(message = USERNAME_NOT_NULL_MSG)
+    @Size(min = USERNAME_SIZE_MIN, max = USERNAME_SIZE_MAX, message = USERNAME_INVALID_SIZE_MSG)
     private String username;
     
-    @NotNull(message = "Password cannot be null")
-    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
-    @Pattern(regexp = ApplicationHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
-        "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
+    @NotNull(message = PASSWORD_SIMPLE_NOT_BLANK_MSG)
+    @Pattern(regexp = PASSWORD_SIMPLE_VALIDATION_REGEX, message = PASSWORD_SIMPLE_INVALID_PATTERN_MSG)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    
+    @NotBlank(message = EMAIL_NOT_BLANK_MSG)
+    @Column(unique = true, name = "email")
+    @Email(regexp = EMAIL_VALIDATION_REGEX, message = EMAIL_INVALID_REGEX_MSG)
+    private String email;
     
     public Admin() {
     }
     
-    public Admin(String username, String password) {
+    public Admin(String username, String password, String email) {
         this.username = username;
         this.password = password;
+        this.email = email;
     }
     
     public long getId() {
@@ -55,5 +59,13 @@ public class Admin {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
