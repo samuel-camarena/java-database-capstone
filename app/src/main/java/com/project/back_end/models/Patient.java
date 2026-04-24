@@ -1,15 +1,12 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.back_end.utils.ApplicationHelper;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
+
+import static com.project.back_end.config.EntityConstraintsConfig.*;
 
 @Entity
 public class Patient {
@@ -18,40 +15,38 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @NotNull(message = "Name cannot be null")
-    @Size(min = 3, max = 100,  message = "Name must be between 3 and 100 characters")
+    @NotBlank(message = NAME_NOT_BLANK_MSG)
+    @Size(min = NAME_SIZE_MIN, max = NAME_SIZE_MAX,  message = NAME_INVALID_SIZE_MSG)
     private String name;
     
-    @NotNull(message = "Email cannot be null")
-    @UniqueElements
-    @Email(regexp = ApplicationHelper.EMAIL_VALIDATION_REGEX,
-        message = "Email address must have a valid format")
+    @NotBlank(message = EMAIL_NOT_BLANK_MSG)
+    @Column(unique = true, name = "email")
+    @Email(regexp = EMAIL_VALIDATION_REGEX, message = EMAIL_INVALID_REGEX_MSG)
     private String email;
     
-    @NotNull(message = "Password cannot be null")
-    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
-    @Pattern(regexp = ApplicationHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
-        "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
+    @NotBlank(message = PASSWORD_SIMPLE_NOT_BLANK_MSG)
+    @Pattern(regexp = PASSWORD_SIMPLE_VALIDATION_REGEX, message = PASSWORD_SIMPLE_INVALID_PATTERN_MSG)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     
-    @NotNull(message = "Phone number cannot be null")
-    @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+    @NotBlank(message = PHONE_NOT_BLANK_MSG)
+    @Pattern(regexp = PHONE_VALIDATION_REGEX, message = PHONE_INVALID_PATTERN_MSG)
     private String phone;
     
-    @NotNull(message = "Address cannot be null")
-    @Size(max = 255, message = "Address must be maximum 255 characters")
+    @NotBlank(message = ADDRESS_NOT_BLANK_MSG)
+    @Size(min = ADDRESS_SIZE_MIN, max = ADDRESS_SIZE_MAX, message = ADDRESS_INVALID_SIZE_MSG)
     private String address;
     
-    @NotNull(message = "Date of birth cannot be null")
-    @Past(message = "Date of birth must be in past")
+    @NotNull(message = DATE_OF_BIRTH_NOT_NULL_MSG)
+    @Past(message = DATE_OF_BIRTH_NOT_PAST_MSG)
     private LocalDate dateOfBirth;
     
-    @NotNull(message = "Emergency contact phone number cannot be null")
-    @Pattern(regexp = "\\d{10}", message = "Emergency contact phone number must be 10 digits")
+    @NotBlank(message = EMERGENCY_CONTACT_NOT_BLANK_MSG)
+    @Pattern(regexp = PHONE_VALIDATION_REGEX, message = PHONE_INVALID_PATTERN_MSG)
     private String emergencyContact;
     
-    @Size(min = 3, max = 100,  message = "Name must be between 3 and 100 characters")
+    @NotBlank(message = INSURANCE_PROVIDER_NOT_BLANK_MSG)
+    @Size(min = INSURANCE_PROVIDER_SIZE_MIN, max = INSURANCE_PROVIDER_SIZE_MAX,  message = INSURANCE_PROVIDER_INVALID_SIZE)
     private String insuranceProvider;
     
     public Patient() {}
@@ -66,6 +61,17 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
         this.emergencyContact = emergencyContact;
         this.insuranceProvider = insuranceProvider;
+    }
+    
+    public Patient(Builder builder) {
+        setName(builder.name);
+        setEmail(builder.email);
+        setPassword(builder.password);
+        setPhone(builder.phone);
+        setAddress(builder.address);
+        setDateOfBirth(builder.dateOfBirth);
+        setEmergencyContact(builder.emergencyContact);
+        setInsuranceProvider(builder.insuranceProvider);
     }
     
     public long getId() {
@@ -138,5 +144,60 @@ public class Patient {
     
     public void setInsuranceProvider(String insuranceProvider) {
         this.insuranceProvider = insuranceProvider;
+    }
+    
+    public static class Builder {
+        private String name;
+        private String email;
+        private String password;
+        private String phone;
+        private String address;
+        private LocalDate dateOfBirth;
+        private String emergencyContact;
+        private String insuranceProvider;
+        
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+        
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+        
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+        
+        public Builder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+        
+        public Builder address(String address) {
+            this.address = address;
+            return this;
+        }
+        
+        public Builder dateOfBirth(LocalDate dateOfBirth) {
+            this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+        
+        public Builder emergencyContact(String emergencyContact) {
+            this.emergencyContact = emergencyContact;
+            return this;
+        }
+        
+        public Builder insuranceProvider(String insuranceProvider) {
+            this.insuranceProvider = insuranceProvider;
+            return this;
+        }
+        
+        public Patient build() {
+            return new Patient(this);
+        }
     }
 }
