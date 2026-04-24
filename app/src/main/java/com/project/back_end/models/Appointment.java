@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static com.project.back_end.config.EntityConstraintsConfig.*;
+
 @Entity
 public class Appointment {
     
@@ -18,27 +20,27 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @NotNull(message = "Doctor cannot be null")
+    @NotNull(message = DOCTOR_NOT_NULL_MSG)
     @ManyToOne
     private Doctor doctor;
     
-    @NotNull(message = "Patient cannot be null")
+    @NotNull(message = PATIENT_NOT_NULL_MSG)
     @ManyToOne
     private Patient patient;
     
-    @NotNull(message = "Appointment cannot be null")
-    @Future(message = "Appointment time must be in the future")
+    @NotNull(message = APPOINTMENT_NOT_NULL_MSG)
+    @Future(message = APPOINTMENT_DATE_TIME_AT_FUTURE_MSG)
     private LocalDateTime appointmentTime;
     
-    @NotNull(message = "Status cannot be null")
-    @Range(min = 0, max = 1, message = "Status must be 0 (scheduled) or 1 (completed)")
+    @NotNull(message = STATUS_NOT_NULL_MSG)
+    @Range(min = 0, max = 1, message = STATUS_INVALID_RANGE_MSG)
     private int status;
     
-    @NotBlank(message = "Reason for visiting cannot be blank")
-    @Size(max = 200, message = "Reason for visiting must be maximum 200 characters")
+    @NotBlank(message = VISITING_REASON_NOT_BLANK_MSG)
+    @Size(max = 200, message = VISITING_REASON_INVALID_MAX_MSG)
     private String reasonForVisiting;
     
-    @Size(max = 200, message = "Notes must be maximum 200 characters")
+    @Size(max = 200, message = NOTES_INVALID_MAX_MSG)
     private String notes;
     
     public Appointment() {}
@@ -51,6 +53,15 @@ public class Appointment {
         this.status = status;
         this.reasonForVisiting = reasonForVisiting;
         this.notes = notes;
+    }
+    
+    public Appointment(Builder builder) {
+        setDoctor(builder.doctor);
+        setPatient(builder.patient);
+        setAppointmentTime(builder.appointmentTime);
+        setStatus(builder.status);
+        setReasonForVisiting(builder.reasonForVisiting);
+        setNotes(builder.notes);
     }
     
     public long getId() {
@@ -122,5 +133,48 @@ public class Appointment {
     @Transient
     public LocalTime getAppointmentTimeOnly() {
         return appointmentTime.toLocalTime();
+    }
+    
+    public static class Builder {
+        private Doctor doctor;
+        private Patient patient;
+        private LocalDateTime appointmentTime ;
+        private int status;
+        private String reasonForVisiting;
+        private String notes;
+        
+        public Builder doctor(Doctor doctor) {
+            this.doctor = doctor;
+            return this;
+        }
+        
+        public Builder patient(Patient patient) {
+            this.patient = patient;
+            return this;
+        }
+        
+        public Builder appointmentTime(LocalDateTime appointmentTime) {
+            this.appointmentTime = appointmentTime;
+            return this;
+        }
+        
+        public Builder status(int status) {
+            this.status = status;
+            return this;
+        }
+        
+        public Builder reasonForVisiting(String reasonForVisiting) {
+            this.reasonForVisiting = reasonForVisiting;
+            return this;
+        }
+        
+        public Builder notes(String notes) {
+            this.notes = notes;
+            return this;
+        }
+        
+        public Appointment build() {
+            return new Appointment(this);
+        }
     }
 }
