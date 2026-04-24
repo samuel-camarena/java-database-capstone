@@ -9,10 +9,18 @@ export async function getDoctors() {
         if(!response.ok) {
             throw new Error(result.message);
         }
-        return { success: response.ok, message: result.message, result.doctors}
+        return {
+            success: response.ok,
+            message: result.message,
+            doctors: result.doctors
+        }
     } catch (error) {
         console.error("Error :: getDoctors :: ", error)
-        return { success: false, message: error.message, doctors: [] }
+        return {
+            success: false,
+            message: error.message,
+            doctors: []
+        }
     }
 }
 
@@ -33,10 +41,16 @@ export async function deleteDoctor(id, token) {
         if(!response.ok) {
             throw new Error(result.message);
         }
-        return { success: response.ok, message: result.message }
+        return {
+            success: response.ok,
+            message: result.message
+        }
     } catch (error) {
         console.error("Error :: deleteDoctor :: ", error)
-        return { success: false, message: error.message }
+        return {
+            success: false,
+            message: error.message
+        }
     }
 }
 
@@ -59,7 +73,7 @@ export async function saveDoctor(doctor, token) {
             throw new Error(result.message);
         }
         return { success: response.ok, message: result.message }
-    } catch (Exception e) {
+    } catch (error) {
         console.error("Error :: saveDoctor :: ", error)
         return { success: false, message: error.message, doctor: null }
     }
@@ -112,9 +126,17 @@ export async function filterDoctors(name ,time ,specialty) {
         if(!response.ok) {
             throw new Error(result.message);
         }
-        return { success: response.ok, message: result.message, doctors: result.doctors }
-    } catch (Exception e) {
-        console.error("Error :: filterDoctors :: ", error)
-        return { success: false, message: error.message, doctors: [] }
+        return {
+            success: response.ok,
+            message: result.message,
+            doctors: result.doctors
+        }
+    } catch (error) {
+        console.error("Error :: filterDoctors :: ", error);
+        return {
+            success: false,
+            message: error.message,
+            doctors: []
+        }
     }
 }
