@@ -18,7 +18,7 @@ if(addDoctorBtn) {
     });
 }
 
-function async loadDoctorCards() {
+async function loadDoctorCards() {
     try {
         const doctors = await getDoctors();
 
@@ -30,7 +30,7 @@ function async loadDoctorCards() {
         doctors.forEach(doctor => {
             const card = createDoctorCard(doctor)
             mainContentDiv.appendChild(card);
-        };
+        });
     } catch (error) {
         console.error("Error :: loadDoctorCards ::" + error);
     }
@@ -51,11 +51,14 @@ if(searchSpecialtySelect) {
     searchSpecialtySelect.addEventListener("change", filterDoctorsOnChange);
 }
 
-function async filterDoctorsOnChange() {
+async function filterDoctorsOnChange() {
     try {
-        const searchValue = searchBar.getValue();
-        const timeValue = searchTimeSelect.getValue();
-        const specialtyValue = searchSpecialtySelect.getValue();
+        //const searchValue = searchBar.getValue();
+        //const timeValue = searchTimeSelect.getValue();
+        //const specialtyValue = searchSpecialtySelect.getValue();
+        let searchValue = searchBar.getValue();
+        let timeValue = searchTimeSelect.getValue();
+        let specialtyValue = searchSpecialtySelect.getValue();
 
         if(searchValue == null || searchValue == undefined || searchValue == "") {
             searchValue = null;
@@ -91,19 +94,23 @@ function renderDoctorCards(doctor) {
     doctors.forEach(doctor => {
         const card = createDoctorCard(doctor)
         mainContentDiv.appendChild(card);
-    };
+    });
 }
 
 window.adminAddDoctor = async function () {
     try {
         const name = document.getElementById("name").value;
+        const specialty = document.getElementById("specialty").value;
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
         const phone = document.getElementById("phone").value;
-        const specialty = document.getElementById("specialty").value;
         const availableTimes = document.getElementById("availableTimes").value;
+        const yearsOfExperience = document.getElementById("yearsOfExperience").value;
+        const clinicAddress = document.getElementById("clinicAddress").value;
+        const rating = document.getElementById("rating").value;
 
-        const doctor = { name, email, password, phone, address };
+        const doctor =
+            { name, specialty, email, password, phone, availableTimes, yearsOfExperience, clinicAddress, rating };
         const token = localStorage.getItem("token");
         if(!token) {
             alert("Invalid log in credentials. Please log in.");
