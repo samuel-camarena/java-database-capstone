@@ -2,7 +2,7 @@ package com.project.back_end.controllers;
 
 import com.project.back_end.models.Doctor;
 import com.project.back_end.services.DoctorService;
-import com.project.back_end.services.mainService;
+import com.project.back_end.services.MainService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -22,14 +22,13 @@ import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageH
 @RestController
 @RequestMapping("${api.path}" + "v1/doctor")
 public class DoctorController {
-    
     private static final Logger logger = LoggerFactory.getLogger(DoctorController.class);
     @Autowired
     private final DoctorService doctorService;
     @Autowired
-    private final mainService mainService;
+    private final MainService mainService;
     
-    public DoctorController(DoctorService doctorService, mainService mainService) {
+    public DoctorController(DoctorService doctorService, MainService mainService) {
         this.doctorService = doctorService;
         this.mainService = mainService;
     }
