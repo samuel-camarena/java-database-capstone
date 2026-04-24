@@ -82,7 +82,7 @@ public class DoctorService {
     }
     
     @Transactional
-    public ResponseEntity<Map<String, Integer>> registerDoctor(Doctor doctor) throws Exception {
+    public ResponseEntity<Map<String, Integer>> registerDoctor(Doctor doctor) {
         try {
             if (doctorRepo.existsByEmail(doctor.getEmail())){
                 logger.error("{}registerDoctor::", MessageHead.FAIL.compose());
