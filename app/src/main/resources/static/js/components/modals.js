@@ -4,8 +4,8 @@ export function openModal(type) {
   if (type === 'addDoctor') {
     modalContent = `
          <h2>Add Doctor</h2>
-         <input type="text" id="doctorName" placeholder="Doctor Name" class="input-field">
-         <select id="specialization" class="input-field select-dropdown">
+         <input type="text" id="name" placeholder="Doctor Name" class="input-field">
+         <select id="specialty" class="input-field select-dropdown">
              <option value="">Specialization</option>
                         <option value="cardiologist">Cardiologist</option>
                         <option value="dermatologist">Dermatologist</option>
@@ -23,9 +23,9 @@ export function openModal(type) {
                         <option value="general">General Physician</option>
 
         </select>
-        <input type="email" id="doctorEmail" placeholder="Email" class="input-field">
-        <input type="password" id="doctorPassword" placeholder="Password" class="input-field">
-        <input type="text" id="doctorPhone" placeholder="Mobile No." class="input-field">
+        <input type="email" id="email" placeholder="Email" class="input-field">
+        <input type="password" id="password" placeholder="Password" class="input-field">
+        <input type="text" id="phone" placeholder="Mobile No." class="input-field">
         <div class="availability-container">
         <label class="availabilityLabel">Select Availability:</label>
           <div class="checkbox-group">
@@ -33,8 +33,14 @@ export function openModal(type) {
               <label><input type="checkbox" name="availability" value="10:00-11:00"> 10:00 AM - 11:00 AM</label>
               <label><input type="checkbox" name="availability" value="11:00-12:00"> 11:00 AM - 12:00 PM</label>
               <label><input type="checkbox" name="availability" value="12:00-13:00"> 12:00 PM - 1:00 PM</label>
+              <label><input type="checkbox" name="availability" value="12:00-13:00"> 1:00 PM - 2:00 PM</label>
+              <label><input type="checkbox" name="availability" value="12:00-13:00"> 2:00 PM - 3:00 PM</label>
+              <label><input type="checkbox" name="availability" value="12:00-13:00"> 3:00 PM - 4:00 PM</label>
           </div>
         </div>
+        <input type="text" id="yearsOfExperience" placeholder="Years of Experience..." class="input-field">
+        <input type="text" id="clinicAddress" placeholder="Clinic Address..." class="input-field">
+        <input type="text" id="rating" placeholder="Rating..." class="input-field">
         <button class="dashboard-btn" id="saveDoctorBtn">Save</button>
       `;
   } else if (type === 'patientLogin') {
