@@ -220,7 +220,7 @@ public class Doctor {
             return this;
         }
         
-        public Builder availableTimes(List availableTimes) {
+        public Builder availableTimes(List<String> availableTimes) {
             this.availableTimes = availableTimes;
             return this;
         }
