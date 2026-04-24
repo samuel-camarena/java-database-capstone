@@ -1,12 +1,12 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.back_end.utils.AppHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Range;
-import org.hibernate.validator.constraints.UniqueElements;
+
 import java.util.List;
+import static com.project.back_end.config.EntityConstraintsConfig.*;
 
 @Entity
 public class Doctor {
@@ -15,60 +15,70 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @NotNull(message = "Name cannot be null")
-    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
+    @NotBlank(message = NAME_NOT_BLANK_MSG)
+    @Size(min = NAME_SIZE_MIN, max = NAME_SIZE_MAX, message = NAME_INVALID_SIZE_MSG)
     private String name;
     
-    @NotNull(message = "Specialty cannot be null")
-    @Size(min = 3, max = 50, message = "Specialty must be between 3 and 50 characters")
+    @NotBlank(message = SPECIALTY_NOT_BLANK_MSG)
+    @Size(min = SPECIALTY_SIZE_MIN, max = SPECIALTY_SIZE_MAX, message = SPECIALTY_INVALID_SIZE_MSG)
     private String specialty;
     
-    @NotNull(message = "Email cannot be null")
-    @UniqueElements(message = "Email must be unique")
-    @Email(regexp = AppHelper.EMAIL_VALIDATION_REGEX,
-        message = "Email address must have a valid format")
+    @NotBlank(message = EMAIL_NOT_BLANK_MSG)
+    @Column(unique = true, name = "email")
+    @Email(regexp = EMAIL_VALIDATION_REGEX, message = EMAIL_INVALID_REGEX_MSG)
     private String email;
     
-    @NotNull(message = "Password cannot be null")
-    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
-    @Pattern(regexp = AppHelper.PASSWORD_SIMPLE_VALIDATION_REGEX, message = "Password must contain " +
-        "any combination of letters a-z, A-Z and/or numbers 0-9, with length between 6 and 20")
+    @NotBlank(message = PASSWORD_SIMPLE_NOT_BLANK_MSG)
+    @Pattern(regexp = PASSWORD_SIMPLE_VALIDATION_REGEX, message = PASSWORD_SIMPLE_INVALID_PATTERN_MSG)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     
-    @NotNull(message = "Phone number cannot be null")
-    @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+    @NotBlank(message = PHONE_NOT_BLANK_MSG)
+    @Pattern(regexp = PHONE_VALIDATION_REGEX, message = PHONE_INVALID_PATTERN_MSG)
     private String phone;
     
-    @NotNull(message = "Available times cannot be null")
+    @NotEmpty(message = AVAILABLE_TIMES_NOT_EMPTY_MSG)
     @ElementCollection
     private List<String> availableTimes;
     
-    @NotNull(message = "Years of experience cannot be null")
-    @Range(min = 0, max = 99, message = "Years of experience must be between 0 and 99 years")
+    @NotNull(message = YEARS_OF_EXP_NOT_NULL_MSG)
+    @Range(min = YEARS_OF_EXP_RANGE_MIN, max = YEARS_OF_EXP_RANGE_MAX, message = YEARS_OF_EXP_INVALID_RANGE_MSG)
     private int yearsOfExperience;
     
-    @NotNull(message = "Clinic address cannot be null")
-    @Size(max = 255, message = "Address must be maximum 255 characters")
+    @NotBlank(message = ADDRESS_NOT_BLANK_MSG)
+    @Size(min = ADDRESS_SIZE_MIN, max = ADDRESS_SIZE_MAX, message = ADDRESS_INVALID_SIZE_MSG)
     private String clinicAddress;
     
-    @Positive
-    @Range(min = 1, max = 5, message = "Rating must be between 1 and 5 stars")
+    @NotNull(message = RATING_NOT_NULL_MSG)
+    @Range(min = RATING_RANGE_MIN, max = RATING_RANGE_MAX, message = RATING_INVALID_RANGE_MSG)
     private double rating;
-    
+
     public Doctor() {}
     
-    public Doctor(String name, String specialty, String email, String password, String phone,
+    Doctor(String name, String specialty, String email, String password, String phone,
                   List<String> availableTimes, int yearsOfExperience, String clinicAddress, double rating) {
-        this.name = name;
-        this.specialty = specialty;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.availableTimes = availableTimes;
-        this.yearsOfExperience = yearsOfExperience;
-        this.clinicAddress = clinicAddress;
-        this.rating = rating;
+        setName(name);
+        setSpecialty(specialty);
+        setEmail(email);
+        setPassword(password);
+        setPhone(phone);
+        setAvailableTimes(availableTimes);
+        setYearsOfExperience(yearsOfExperience);
+        setClinicAddress(clinicAddress);
+        setRating(rating);
+    }
+    
+    public Doctor(Builder builder) {
+        setId(builder.id);
+        setName(builder.name);
+        setSpecialty(builder.specialty);
+        setEmail(builder.email);
+        setPassword(builder.password);
+        setPhone(builder.phone);
+        setAvailableTimes(builder.availableTimes);
+        setYearsOfExperience(builder.yearsOfExperience);
+        setClinicAddress(builder.clinicAddress);
+        setRating(builder.rating);
     }
     
     public long getId() {
@@ -166,6 +176,73 @@ public class Doctor {
             ", ClinicAddress: '" + clinicAddress + '\'' +
             ", Rating: " + rating +
             " }";
+    }
+    
+    public static class Builder {
+        private long id;
+        private String name;
+        private String specialty;
+        private String email;
+        private String password;
+        private String phone;
+        private List<String> availableTimes;
+        private int yearsOfExperience;
+        private String clinicAddress;
+        private double rating;
+        
+        public Builder id(long id) {
+            this.id = id;
+            return this;
+        }
+        
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+        
+        public Builder specialty(String specialty) {
+            this.specialty = specialty;
+            return this;
+        }
+        
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+        
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+        
+        public Builder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+        
+        public Builder availableTimes(List availableTimes) {
+            this.availableTimes = availableTimes;
+            return this;
+        }
+        
+        public Builder yearsOfExperience(int yearsOfExperience) {
+            this.yearsOfExperience = yearsOfExperience;
+            return this;
+        }
+        
+        public Builder clinicAddress(String clinicAddress) {
+            this.clinicAddress = clinicAddress;
+            return this;
+        }
+        
+        public Builder rating(double rating) {
+            this.rating = rating;
+            return this;
+        }
+        
+        public Doctor build() {
+            return new Doctor(this);
+        }
     }
 }
 
