@@ -161,6 +161,18 @@ public class Doctor {
         this.rating = rating;
     }
     
+    public static String extractStartingTimeFromTimeSlot(String timeSlot) {
+        return timeSlot.split("-")[0]; // "10:00-11:00" -> "10:00"
+    }
+    
+    public static boolean isTimeSlotAvailable(String timeSlot, List<String> availableTimeSlots) {
+        return availableTimeSlots
+            .stream()
+            .anyMatch(
+                t -> extractStartingTimeFromTimeSlot(t)
+                    .contentEquals(extractStartingTimeFromTimeSlot(timeSlot)));
+    }
+    
     @Override
     @Transient
     public String toString() {
