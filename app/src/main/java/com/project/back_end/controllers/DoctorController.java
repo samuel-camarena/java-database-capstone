@@ -95,7 +95,7 @@ public class DoctorController {
     
     /**
      * Handles HTTP GET requests to filter doctors based on name, time, and specialty.<p>
-     * * Calls the shared `Service` to perform filtering logic and returns matching doctors in the response.</p>
+     * * Calls the shared `MainService` to perform filtering logic and returns matching doctors in the response.</p>
      * @param name contained partially in doctor's name.
      * @param time for appointment availability.
      * @param specialty of doctors.
