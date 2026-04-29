@@ -127,9 +127,6 @@ public class MainService {
      * @return returns a JWT token (using the admin’s username)
      */
     public String validateAdminLogin(String username, String password) {
-        // TODO: quizás colapsar ambos métodos en solo mensaje de error wrong password o username
-        // TODO: No he podido utilizar CredentialNotFoundException porque no tiene atributo de HttpStatus. ¿Alguna idea para reutilizarla, o cambiar el nombre
-        //  de CustomCredentialNotFoundException?
         Optional<Admin> opAdmin = adminRepo.findByUsername(username);
         if (opAdmin.isEmpty())
             throw new CustomCredentialNotFoundException("Wrong username for Admin login");
