@@ -62,7 +62,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> findByNameIgnoreCaseAndSpecialty(String name, String specialty);
     
     @NativeQuery(value = "SELECT * FROM doctor d, doctor_available_times dat WHERE TIME(dat.available_times) = TIME(?1) AND dat.doctor_id = d.id")
-    List<Doctor> findByAvailableTimesEqualsTimePeriod(String timePeriod);
+    List<Doctor> findByAvailableTimesEqualsTime(String timePeriod);
     
     //@Transcient
     default boolean notExistsById(Long id) {
@@ -81,8 +81,8 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * already booked slots.
      * @param doctorId doctor to fetch all time slots for a given date, filtering out those already booked.
      * @param date objective of booking patient
-     * @return List contains all available time slots in format (hh:mm:ss), represented by
-     * the starting slot time and its ending (1 plus hour). e.g.: 10:00 - 11:00, 14:00 - 15:00, ...
+     * @return List contains all available time slots in format (hh:mm), represented by
+     * the starting time slot and its ending (1 plus hour). e.g.: "10:00-11:00", "14:00-15:00", ...
      */
     @Transactional
     @Procedure("GetDoctorAvailableTimeSlots")
