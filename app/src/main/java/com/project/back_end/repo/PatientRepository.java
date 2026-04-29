@@ -1,8 +1,10 @@
 package com.project.back_end.repo;
 
+import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,6 +16,10 @@ import java.util.Optional;
  */
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
+    
+    default Optional<Patient> register(Patient patient) {
+        return Optional.of(save(patient));
+    }
     
     /**
      * This method retrieves a Patient by their email address.
@@ -29,5 +35,12 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
      * @return Optional of Patient
      */
     Optional<Patient> findByEmailOrPhone(String email, String phone);
+    
+    default boolean notExistsById(Long id) {
+        return !existsById(id);
+    }
+    
+    @Transactional
+    boolean existsByEmail(String email);
 }
 
