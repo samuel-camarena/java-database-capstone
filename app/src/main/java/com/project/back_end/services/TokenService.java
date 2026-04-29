@@ -142,7 +142,7 @@ public class TokenService {
      * @return boolean true if a match is found for the specified user role, indicating the token is valid. Otherwise,
      *         it returns false, indicating the token is invalid.
      */
-    public boolean validateToken(String token, String user) {
+    public boolean isValidToken(String token, String user) {
         try {
             return switch (user) {
                 case "admin" -> adminRepo.findByUsername(extractUsername(token)).isPresent() && !isTokenExpired(token);
@@ -151,7 +151,7 @@ public class TokenService {
                 default -> false;
             };
         } catch (Exception e) {
-            throw new DatabaseAccessException("Error in validateToken while accessing to repositories.");
+            throw new DatabaseAccessException("Error in isValidToken while accessing to repositories.");
         }
     }
 }
