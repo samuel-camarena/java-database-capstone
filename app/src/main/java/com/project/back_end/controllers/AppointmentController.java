@@ -44,15 +44,13 @@ public class AppointmentController {
      * Handles HTTP POST requests to create a new appointment.<p>
      * * Accepts a validated `Appointment` object in the request body and a token as a path variable.<br>
      * * Validates the token for the `"patient"` role.<br>
-     * * Uses service logic to validate the appointment data (e.g., check for doctor availability and time conflicts).<br>
-     * - Returns success if booked, or appropriate error messages if the doctor ID is invalid or the slot is already taken.</p>
+     * * Uses service logic to validate the appointment data (e.g., check for doctor availability and time conflicts).</p>
      * @param token token for the `"patient"` role.
      * @param appointDTO a new appointment with DTO format.
-     * @return ResponseEntity<Map<String, Integer>>
-     * @throws Exception
+     * @return Success message if booked, or appropriate error messages if the doctor ID is invalid or the slot is already taken.
      */
-    @PostMapping("/book")
-    public ResponseEntity<Map<String, Integer>> bookAppointment(
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> bookAppointment(
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid AppointmentDTO appointDTO) {
         
@@ -61,7 +59,7 @@ public class AppointmentController {
         
         appointmentService.bookAppointment(appoint);
         logger.info("{}bookAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
-        return composeResponse(HttpStatus.CREATED, "status", SUCCESS.getStatus());
+        return composeResponse(HttpStatus.CREATED, "message", "Appointment successfully booked");
     }
     
     /**
@@ -102,7 +100,7 @@ public class AppointmentController {
      * @param appointDTO to modify an existing appointment
      * @return Returns an appropriate success or failure response
      */
-    @PutMapping("/update")
+    @PutMapping("/{token}")
     public ResponseEntity<Map<String, String>> updateAppointment(
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid AppointmentDTO appointDTO) {
@@ -124,7 +122,7 @@ public class AppointmentController {
      * @param id long appointment ID
      * @return returns HTTP OK 200, and descriptive message.
      */
-    @DeleteMapping("/cancel")
+    @DeleteMapping("/{id}/{token}")
     public ResponseEntity<Map<String, String>> cancelAppointment(
         @PathVariable("Authorization") @Valid String token,
         @PathVariable("id") @Valid long id) {
