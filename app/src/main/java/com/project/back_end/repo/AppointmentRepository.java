@@ -31,7 +31,7 @@ public interface AppointmentRepository  extends JpaRepository<Appointment, Long>
      */
     List<Appointment> findByDoctorIdAndAppointmentTimeBetween(Long doctorId, LocalDateTime start,
                                                               LocalDateTime end);
-    List<Appointment> findByDoctorIdAndAppointmentTimeBetween(Long doctorId, LocalDate date);
+    List<Appointment> findByDoctorIdAndAppointmentDate(Long doctorId, LocalDate date);
     
     /**
      * This method retrieves appointments based on a doctor’s name (using a LIKE query) and the patient’s ID.
