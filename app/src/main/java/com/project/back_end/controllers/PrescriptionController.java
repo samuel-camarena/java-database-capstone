@@ -50,7 +50,7 @@ public class PrescriptionController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid Prescription prescription) {
         
-        mainService.validateToken(token, "doctor");
+        mainService.isValidToken(token, "doctor");
         prescriptionService.savePrescription(prescription);
         appointmentService.updateStatus(prescription.getAppointmentId(), COMPLETED.getValue());
         logger.info("{}savePrescription:: {}", MessageHead.SUCCESS.compose(), "Prescription successfully saved");
@@ -71,7 +71,7 @@ public class PrescriptionController {
         @PathVariable("Authorization") @Valid String token,
         @PathVariable @Valid long appointmentId) {
         
-        mainService.validateToken(token, "doctor");
+        mainService.isValidToken(token, "doctor");
         
         List<Prescription> pres = prescriptionService.getPrescription(appointmentId);
         logger.info("{}getPrescription:: {}", MessageHead.SUCCESS.compose(),
