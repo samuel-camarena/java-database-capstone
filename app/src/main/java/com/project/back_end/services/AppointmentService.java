@@ -1,176 +1,184 @@
 package com.project.back_end.services;
 
+import com.project.back_end.exceptions.*;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.AppointmentRepository;
-import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.project.back_end.utils.AppHelper.composeResponse;
-import static com.project.back_end.utils.OperationStatus.*;
 import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
 
 /**
- * mainService layer class for handling business logic.
+ * MainService layer class for handling business logic.
  */
 @Service
 public class AppointmentService {
-    
     private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
-    private final AppointmentRepository appointmentRepo;
-    private final DoctorRepository doctorRepo;
-    private final PatientRepository patientRepo;
     private final TokenService tokenService;
+    private final MainService mainService;
     private final DoctorService doctorService;
+    private final AppointmentRepository appointmentRepo;
+    private final PatientRepository patientRepo;
     
-    public AppointmentService(AppointmentRepository appointmentRepo, DoctorRepository doctorRepo,
-                              PatientRepository patientRepo, TokenService tokenService, DoctorService doctorService) {
+    @Autowired
+    public AppointmentService(AppointmentRepository appointmentRepo, PatientRepository patientRepo,
+                              TokenService tokenService, MainService mainService, DoctorService doctorService) {
+        
         this.appointmentRepo = appointmentRepo;
-        this.doctorRepo = doctorRepo;
         this.patientRepo = patientRepo;
         this.tokenService = tokenService;
+        this.mainService = mainService;
         this.doctorService = doctorService;
     }
     
-    @Transactional
-    public int bookAppointment(Appointment appointment) {
-        try {
-            appointmentRepo.save(appointment);
-            return 1;
-        } catch (Exception e) {
-            System.err.println("Error :: AppointmentService :: bookAppointment :: " + e.getMessage());
-            return 0;
-        }
-    }
-    
-    // 5. **Update Appointment Method**:
-//    - This method is used to updateDoctor an existing appointment based on its ID.
-//    - It validates whether the patient ID matches,
-//      checks if the appointment is available for updating,
-//      and ensures that the doctor is available at the specified time.
-//    - If the updateDoctor is successful, it saves the appointment; otherwise, it returns an appropriate error message.
-//    - Instruction: Ensure proper validation and error handling is included for appointment updates.
-    public ResponseEntity<Map<String, String>> updateAppointment(Appointment appointment) {
-        try {
-            if(!appointmentRepo.existsById(appointment.getId())) {
-                logger.error("{}updateAppointment::", MessageHead.FAIL.compose());
-                return composeResponse(NOT_FOUND, "updateAppointment", "Appointment not found");
-            }
-            if(!patientRepo.existsById(appointment.getPatient().getId())) {
-                logger.error("{}updateAppointment::", MessageHead.FAIL.compose());
-                return composeResponse(NOT_FOUND, "updateAppointment", "Patient not found");
-            }
-            
-            ResponseEntity<Map<String, List<String>>> res = doctorService
-                .getDoctorAvailability(appointment.getDoctor().getId(), appointment.getAppointmentTime().toLocalDate());
-            
-            if (res.getStatusCode().is2xxSuccessful()) {
-                if(res.getBody().get("availableTimes")
-                    .stream()
-                    .filter(time -> time.substring(0, 5)
-                        .equals(appointment.getAppointmentTime().toLocalTime()))
-                    .findFirst()
-                    .isPresent()) {
-                    
-                    appointmentRepo.save(appointment);
-                    logger.info("{}updateAppointment::", MessageHead.SUCCESS.compose());
-                    return composeResponse(SUCCESS, "updateAppointment", "");
-                }
-            }
-            
-            logger.error("{}updateAppointment::", MessageHead.FAIL.compose());
-            return composeResponse(FAIL, "updateAppointment", "Appointment not available");
-        } catch (Exception e) {
-            logger.error("{}updateAppointment::", MessageHead.ERROR.compose());
-            return composeResponse(SERVER_ERR, "status", SERVER_ERR.getStatus() + "");
-        }
-    }
-    
-    // 6. **Cancel Appointment Method**:
-    //    - This method cancels an appointment by deleting it from the database.
-    //    - It ensures the patient who owns the appointment is trying to cancel it and handles possible errors.
-    //    - Instruction: Make sure that the method checks for the patient ID match before deleting the appointment
-    public ResponseEntity<Map<String, String>> cancelAppointment(long id, String token){
-        Optional<Appointment> opAppoint = appointmentRepo.findById(id);
-        if (opAppoint.isEmpty()) {
-            logger.error("{}cancelAppointment::", MessageHead.FAIL.compose());
-            return composeResponse(NOT_FOUND, "cancelAppointment", "Appointment not found");
-        }
+    /**
+     * This method is responsible for saving the new appointment to the database.<p>
+     * * For future behavior extension it will return the URI of the book.</p>
+     * @param appoint a
+     */
+    public void bookAppointment(Appointment appoint) {
+        if (!mainService.isValidAppointment(appoint))
+            throw new ResourceCreationFailedException("Appointment creation failed with object data: " + appoint);
         
-        Optional<Patient> opPatient = patientRepo.findById(opAppoint.get().getPatient().getId());
-        if(opPatient.isEmpty()) {
-            logger.error("{}cancelAppointment::", MessageHead.FAIL.compose());
-            return composeResponse(NOT_FOUND, "cancelAppointment", "Patient not found");
-        }
+        Optional<Appointment> opAppoint = appointmentRepo.book(appoint);
+        if (opAppoint.isEmpty())
+            throw new ResourceCreationFailedException("Appointment creation failed with object data: " + appoint);
         
-        // token -> extract email and check for patient matching email.
-        // if correct -> delete appointment by id
-        appointmentRepo.deleteById(id);
-        return ResponseEntity.ok().build();
-        // if fail -> return responseEntity.NotAuthorized.
-        // return composeResponse(UNAUTHORIZED, "cancelAppointment", "Wrong token");
+        logger.info("{}bookAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment booked with data: " + appoint);
     }
     
     /**
-     * This method retrieves a list of appointments for a specific doctor on a particular day,
-     * optionally filtered by the patient's name.
+     * This method retrieves a list of appointments for a specific doctor on a particular day, optionally filtered by
+     * the patient's name.<p>
+     * * It uses `@Transactional` to ensure that database operations are consistent and handled in a single transaction.</p>
      * @param doctorId doctorId
      * @param date date
-     * @param patientsName Patient's name
+     * @param patientName Patient's name
      * @return List of Appointments
      */
-    public ResponseEntity<Map<String, List<Appointment>>> getAppointment(
-            long doctorId, LocalDateTime date, String patientsName) {
-        
-        try {
-            List<Appointment> appoints =
-                appointmentRepo.findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTimeBetween(
-                    doctorId, patientsName, date, date);
-            if (appoints.isEmpty()) {
-                logger.error("{}getAppointment::", MessageHead.FAIL.compose());
-                return composeResponse(FAIL, "appointments", appoints);
-            }
-            
-            logger.info("{}getAppointment::", MessageHead.SUCCESS.compose());
-            return composeResponse(SUCCESS, "appointments", appoints);
-        } catch (Exception e) {
-            logger.info("{}getAppointment::", MessageHead.SUCCESS.compose());
-            return composeResponse(SERVER_ERR, "appointments", List.of());
+    @Transactional
+    public List<Appointment> getAppointments(long doctorId, LocalDate date, String patientName) {
+        List<Appointment> appoints;
+        if (!patientName.equals("null")) {
+            appoints = appointmentRepo
+                .findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentDate(
+                    doctorId, patientName, date);
+        } else {
+            appoints = appointmentRepo
+                .findByDoctorIdAndAppointmentDate(doctorId, date);
         }
+        logger.info("{}getAppointments:: {}", MessageHead.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
+            + doctorId + ", at day: " + date + " and optional patient name: " + patientName);
+        return appoints;
+    }
+    
+    /**
+     * Extra Method for further functionality extension.
+     * @param patientName p
+     * @param date d
+     * @return Appointment List
+     */
+    @Transactional
+    public List<Appointment> getAppointmentsByPatientAndDate(String patientName, LocalDate date) {
+        List<Appointment> appoints = appointmentRepo
+            .findByPatient_NameContainingIgnoreCaseAndAppointmentDate(patientName, date);
+        if (appoints.isEmpty())
+            throw new ResourceNotFoundException("Appointments not found by patient name: "
+                + patientName + " and date: " + date);
+        
+        return appoints;
+    }
+    
+    /**
+     * This method is used to update an existing appointment based on its ID.<p>
+     * * It validates whether the patient ID matches, checks if the appointment is available for updating,
+     *   and ensures that the doctor is available at the specified time.<br>
+     * * If the updateDoctor is successful, it saves the appointment; otherwise, it throws a ResourceUpdateFailedException.
+     *   error message.</p>
+     * @param appoint a
+     */
+    @Transactional
+    public void updateAppointment(Appointment appoint) {
+        appointmentRepo.findById(appoint.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Appointment not found by ID: " + appoint.getId()));
+        
+        if (!mainService.isValidAppointment(appoint))
+            throw new ResourceUpdateFailedException("Appointment update failed with object data: " + appoint);
+        
+        if(!patientRepo.existsById(appoint.getPatient().getId()))
+            throw new ResourceNotFoundException("Appointment's patient not found by ID: " + appoint.getPatient().getId());
+
+        appointmentRepo.save(appoint);
+        logger.info("{}updateAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment updated");
     }
     
     /**
      * This method updates the status of an appointment by changing its value in the database.
-     * It should be annotated with `@Transactional` to ensure the operation is executed in a single transaction.
-     * @param id
-     * @param status
-     * @return
+     * @param id `long` appointment to be change
+     * @param status `int` must be 0 (scheduled) or 1 (completed)
      */
     @Transactional
-    public ResponseEntity<Map<String, Integer>> updateStatus(long id, int status){
-        try {
-            Optional<Appointment> opAppoint = appointmentRepo.findById(id);
-            if (opAppoint.isEmpty()) {
-                logger.error("{}updateStatus::", MessageHead.FAIL.compose());
-                return composeResponse(FAIL, "appointments", FAIL.getStatus());
-            }
-            opAppoint.get().setStatus(status);
-            appointmentRepo.save(opAppoint.get());
-            logger.info("{}updateStatus::", MessageHead.SUCCESS.compose());
-            return composeResponse(SUCCESS, "appointments", SUCCESS.getStatus());
-        } catch (Exception e) {
-            logger.info("{}updateStatus::", MessageHead.ERROR.compose());
-            return composeResponse(SERVER_ERR, "appointments", SERVER_ERR.getStatus());
+    public void updateStatus(long id, int status){
+        Optional<Appointment> opAppoint = appointmentRepo.findById(id);
+        if (opAppoint.isEmpty())
+            throw new ResourceNotFoundException("Appointment not found by ID: " + id);
+        
+        opAppoint.get().setStatus(status);
+        appointmentRepo.save(opAppoint.get());
+        logger.info("{}updateStatus:: {}", MessageHead.SUCCESS.compose(),
+            "Appointment status successfully Changed to: " + status);
+    }
+    
+    /**
+     * This method cancels an appointment by deleting it from the database.<p>
+     * * It ensures the patient who owns the appointment is trying to cancel it and throws ResourceNotFoundException
+     * or .</p>
+     * @param id long ...
+     * @param token String ...
+     */
+    @Transactional
+    public void cancelAppointment(long id, String token){
+        Appointment appoint = appointmentRepo
+            .findById(id)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Appointment not found by ID: " + id));
+        
+        Patient patient = patientRepo
+            .findById(appoint.getPatient().getId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Patient not found by ID: " + id));
+        
+        String authPatientEmail = tokenService.extractEmail(token);
+        if (!patient.getEmail().equalsIgnoreCase(authPatientEmail))
+            throw new CredentialMismatchedException("Patient authenticated does not match appointment ownership");
+        
+        appointmentRepo.deleteById(id);
+        logger.info("{}cancelAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment canceled by ID: "
+            + id + " and patient ID: " + patient.getId());
+    }
+    
+    public enum Status {
+        SCHEDULED (0),
+        COMPLETED (1),
+        CANCELED (-1);
+        
+        private final int value;
+        
+        Status(int value) {
+            this.value = value;
+        }
+        
+        public int getValue() {
+            return value;
         }
     }
 }
