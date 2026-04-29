@@ -25,19 +25,17 @@ public class AppointmentService {
     private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
     private final TokenService tokenService;
     private final MainService mainService;
-    private final DoctorService doctorService;
     private final AppointmentRepository appointmentRepo;
     private final PatientRepository patientRepo;
     
     @Autowired
     public AppointmentService(AppointmentRepository appointmentRepo, PatientRepository patientRepo,
-                              TokenService tokenService, MainService mainService, DoctorService doctorService) {
+                              TokenService tokenService, MainService mainService) {
         
         this.appointmentRepo = appointmentRepo;
         this.patientRepo = patientRepo;
         this.tokenService = tokenService;
         this.mainService = mainService;
-        this.doctorService = doctorService;
     }
     
     /**
