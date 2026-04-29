@@ -1,12 +1,10 @@
 package com.project.back_end.controllers;
 
+import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.services.DoctorService;
 import com.project.back_end.services.MainService;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,103 +15,140 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import static com.project.back_end.utils.AppHelper.composeResponse;
+import static com.project.back_end.utils.TimePeriodOfDay.mapToTimePeriod;
 
 @RestController
 @RequestMapping("${api.path}" + "v1/doctor")
 public class DoctorController {
-    private static final Logger logger = LoggerFactory.getLogger(DoctorController.class);
-    @Autowired
     private final DoctorService doctorService;
-    @Autowired
     private final MainService mainService;
     
+    @Autowired
     public DoctorController(DoctorService doctorService, MainService mainService) {
         this.doctorService = doctorService;
         this.mainService = mainService;
     }
     
-    @GetMapping("/availability")
+    /**
+     * Handles HTTP POST requests for doctor login.
+     * * Accepts a validated `Login` DTO containing credentials.
+     * * Delegates authentication to the `DoctorService` and returns login status and token information.
+     * @param loginDTO username / email, password
+     * @return returns login status and token information.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody @Valid Login loginDTO) {
+        return composeResponse(HttpStatus.OK, "token",
+            mainService.validateDoctorLogin(loginDTO.getIdentifier(), loginDTO.getPassword()));
+    }
+    
+    /**
+     * Handles HTTP POST requests to register a new doctor.<p>
+     * * Accepts a validated `Doctor` object in the request body and a token for authorization.<br>
+     * * Validates the token for the `"admin"` role before proceeding.</p>
+     * @param token JWT token for the `"admin"` role
+     * @param doctor to register as new doctor
+     * @return If the doctor already exists, returns a conflict response; otherwise,
+     *          adds the doctor and returns a success message.
+     */
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> registerDoctor(
+        @PathVariable("Authorization") @Valid String token,
+        @RequestBody @Valid Doctor doctor) {
+        
+        mainService.isValidToken(token, "admin");
+        doctorService.registerDoctor(doctor);
+        return composeResponse(HttpStatus.CREATED, "message", "Doctor successfully registered");
+    }
+    
+    /**
+     * Handles HTTP GET requests to check a specific doctor’s availability on a given date.<p>
+     * * Requires `user` type, `doctorId`, `date`, and `token` as path variables.<br>
+     * * First validates the token against the user type.</p>
+     * @param user `user` type
+     * @param token and `token`
+     * @param id `doctor's ID as long
+     * @param date `date`
+     * @return If the token is invalid, returns an error response; otherwise, returns the availability status for the doctor.
+     */
+    @GetMapping("/availability/{id}/{date}/{user}/{token}")
     public ResponseEntity<Map<String, List<String>>> getDoctorAvailability(
-        @RequestHeader("X-User") @Valid String user,
-        @RequestHeader("Authorization") @Valid String token,
-        @RequestParam @Valid long doctorId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Valid LocalDate date) throws Exception {
+        @PathVariable("X-User") @Valid String user,
+        @PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid long id,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Valid LocalDate date) {
         
-        if (mainService.validateToken(token, user).getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED)) {
-            logger.error("{}getDoctorAvailability", MessageHead.UNAUTHORIZED.compose());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        
-        logger.info("{}getDoctorAvailability", MessageHead.SUCCESS.compose());
-        return doctorService.getDoctorAvailability(doctorId, date);
+        mainService.isValidToken(token, user);
+        return composeResponse(HttpStatus.OK, "availableTimes", doctorService.getDoctorAvailability(id, date));
     }
     
-    
-    @GetMapping("/")
-    public ResponseEntity<Map<String, List<Doctor>>> getDoctors(
-        @RequestHeader("X-User") @Valid String user,
-        @RequestHeader("Authorization") @Valid String token) throws Exception {
-        
-        if (mainService.validateToken(token, user).getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED)) {
-            logger.error("{}getDoctors", MessageHead.UNAUTHORIZED.compose());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        
-        logger.info("{}getDoctors", MessageHead.SUCCESS.compose());
-        return doctorService.getDoctors();
+    /**
+     * Handles HTTP GET requests to retrieve a list of all doctors.<p>
+     * * Returns the list within a response map under the key `"doctors"` with HTTP 200 OK status.</p>
+     * @return HTTP 200 OK and body with doctor's list
+     */
+    @GetMapping("/getDoctors")
+    public ResponseEntity<Map<String, List<Doctor>>> getDoctors() {
+        return composeResponse(HttpStatus.OK, "doctors", doctorService.getDoctors());
     }
     
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Integer>> saveDoctor(
-        @RequestHeader("X-User") @Valid String user,
-        @RequestHeader("Authorization") @Valid String token,
-        @RequestBody @Valid Doctor doctor) throws Exception {
+    /**
+     * Handles HTTP GET requests to filter doctors based on name, time, and specialty.<p>
+     * * Calls the shared `Service` to perform filtering logic and returns matching doctors in the response.</p>
+     * @param name contained partially in doctor's name.
+     * @param time for appointment availability.
+     * @param specialty of doctors.
+     * @return ResponseEntity<Map<String, List<Doctor>>>
+     */
+    @GetMapping("/filer/{name}/{time}/{specialty}")
+    public ResponseEntity<Map<String, List<Doctor>>> filterDoctors(
+        @PathVariable @Valid String name,
+        @PathVariable @Valid String time,
+        @PathVariable @Valid String specialty) {
         
-        if (mainService.validateToken(token, user).getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED)) {
-            logger.error("{}saveDoctor", MessageHead.UNAUTHORIZED.compose());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        
-        logger.info("{}saveDoctor", MessageHead.SUCCESS.compose());
-        return doctorService.registerDoctor(doctor);
+        return composeResponse(HttpStatus.OK, "doctors", mainService.filterDoctor(name, specialty, mapToTimePeriod(time)));
     }
     
-    @PutMapping("/update")
-    public ResponseEntity<Map<String, Integer>> updateDoctor(
-        @RequestHeader("X-User") @Valid String user,
-        @RequestHeader("Authorization") @Valid String token,
-        @RequestBody @Valid Doctor doctor) throws Exception {
+    /**
+     * Handles HTTP PUT requests to update an existing doctor's information.<p>
+     * * Accepts a validated `Doctor` object and a token for authorization.<br>
+     * * Token must belong to an `"admin"`.<br>
+     * * If the doctor exists, updates the record and returns success; otherwise,
+     *   returns not found or error messages.</p>
+     * @param token JWT token
+     * @param doctor fulfilled with the data to be updated
+     * @return ResponseEntity<Map<String, String>>
+     */
+    @PutMapping("/{token}")
+    public ResponseEntity<Map<String, String>> updateDoctor(
+        @PathVariable("Authorization") @Valid String token,
+        @RequestBody @Valid Doctor doctor) {
         
-        if (mainService.validateToken(token, user).getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED)) {
-            logger.error("{}updateDoctor", MessageHead.UNAUTHORIZED.compose());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        
-        logger.info("{}updateDoctor", MessageHead.SUCCESS.compose());
-        return doctorService.updateDoctor(doctor);
+        mainService.isValidToken(token, "admin");
+        doctorService.updateDoctor(doctor);
+        return composeResponse(HttpStatus.OK, "message", "Doctor successfully updated");
     }
     
-    
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Map<String, Integer>> deleteDoctor(
-        @RequestHeader("X-User") @Valid String user,
-        @RequestHeader("Authorization") @Valid String token,
-        @PathVariable @Valid long doctorId) throws Exception {
+    /**
+     * Handles HTTP DELETE requests to remove a doctor by ID.<p>
+     * * Requires both doctor ID and an admin token as path variables.<br>
+     * * If the doctor exists, deletes the record and returns a success message; otherwise,
+     *   responds with a not found or error message.</p>
+     * @param token JWT OAuth2
+     * @param id d
+     * @return ResponseEntity<Map<String, String>>
+     */
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, String>> deleteDoctor(
+        @PathVariable("Authorization") @Valid String token,
+        @PathVariable("id") @Valid long id) {
         
-        if (mainService.validateToken(token, user).getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED)) {
-            logger.error("{}deleteDoctor", MessageHead.UNAUTHORIZED.compose());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        
-        logger.info("{}deleteDoctor", MessageHead.SUCCESS.compose());
-        return doctorService.deleteDoctor(doctorId);
+        mainService.isValidToken(token, "admin");
+        doctorService.deleteDoctor(id);
+        return composeResponse(HttpStatus.OK, "message",
+            "Doctor and its associated appointments successfully deleted");
     }
     
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex) {
-        String errorMessage = ex.getConstraintViolations().iterator().next().getMessage();
-        logger.error("{}handleConstraintViolation::{}", MessageHead.ERROR.compose(), errorMessage);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-    }
+
 }
