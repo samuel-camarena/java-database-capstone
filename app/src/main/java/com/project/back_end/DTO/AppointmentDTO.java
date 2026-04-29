@@ -16,21 +16,41 @@ public class AppointmentDTO {
     private String patientAddress;
     private int status; // "Scheduled:0", "Completed:1", or other statuses (e.g., "Canceled") as needed.
     private LocalDateTime appointmentDateAndTime;
+    private String reasonForVisiting;
+    private String notes;
     
     public AppointmentDTO(Long id, Long doctorId, String doctorName, Long patientId, String patientName,
                           String patientEmail, String patientPhone, String patientAddress, int status,
-                          LocalDateTime appointmentDateTime) {
+                          LocalDateTime appointmentDateAndTime, String reasonForVisiting) {
         this.id = id;
         this.doctorId = doctorId;
         this.doctorName = doctorName;
-        
         this.patientId = patientId;
         this.patientName = patientName;
         this.patientEmail = patientEmail;
         this.patientPhone = patientPhone;
         this.patientAddress = patientAddress;
         this.status = status;
-        this.appointmentDateAndTime = appointmentDateTime;
+        this.appointmentDateAndTime = appointmentDateAndTime;
+        this.reasonForVisiting = reasonForVisiting;
+        this.notes = "";
+    }
+    
+    public AppointmentDTO(Long id, Long doctorId, String doctorName, Long patientId, String patientName,
+                          String patientEmail, String patientPhone, String patientAddress, int status,
+                          LocalDateTime appointmentDateAndTime, String reasonForVisiting, String notes) {
+        this.id = id;
+        this.doctorId = doctorId;
+        this.doctorName = doctorName;
+        this.patientId = patientId;
+        this.patientName = patientName;
+        this.patientEmail = patientEmail;
+        this.patientPhone = patientPhone;
+        this.patientAddress = patientAddress;
+        this.status = status;
+        this.appointmentDateAndTime = appointmentDateAndTime;
+        this.reasonForVisiting = reasonForVisiting;
+        this.notes = notes;
     }
     
     public Long getId() {
@@ -113,6 +133,30 @@ public class AppointmentDTO {
         this.appointmentDateAndTime = appointmentDateTime;
     }
     
+    public LocalDateTime getAppointmentDateAndTime() {
+        return appointmentDateAndTime;
+    }
+    
+    public void setAppointmentDateAndTime(LocalDateTime appointmentDateAndTime) {
+        this.appointmentDateAndTime = appointmentDateAndTime;
+    }
+    
+    public String getReasonForVisiting() {
+        return reasonForVisiting;
+    }
+    
+    public void setReasonForVisiting(String reasonForVisiting) {
+        this.reasonForVisiting = reasonForVisiting;
+    }
+    
+    public String getNotes() {
+        return notes;
+    }
+    
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+    
     /*
         Derived and Extracted utility Methods.
      */
@@ -135,4 +179,6 @@ public class AppointmentDTO {
     public LocalTime getAppointmentEndTime() {
         return appointmentDateAndTime.toLocalTime().plusHours(1);
     }
+    
+    
 }
