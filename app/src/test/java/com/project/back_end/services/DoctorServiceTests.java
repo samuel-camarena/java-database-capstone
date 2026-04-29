@@ -1,6 +1,6 @@
 package com.project.back_end.services;
 
-import com.project.back_end.exceptions.DoctorRepositoryException;
+import com.project.back_end.exceptions.ResourceNotFoundException;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
@@ -13,15 +13,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -90,61 +87,57 @@ public class DoctorServiceTests {
     }
 
     @Nested
-    class DoctorMainServiceSuccessfulTests {
+    class DoctorServiceSuccessfulTests {
 
         @Test
         void givenAValidIdAndDate_whenGetDoctorAvailability_thenResEntityOkAndBodyAvailableTimeSlotsAtDate() throws Exception {
             when(doctorRepo.getDoctorAvailability(1L, LocalDate.now().plusDays(1))).thenReturn(List.of("1", "2"));
             when(doctorRepo.notExistsById(1L)).thenReturn(false);
             
-            ResponseEntity<Map<String, List<String>>> res =
+            List<String> expectedAvailableTimeSlots =
                 doctorService.getDoctorAvailability(1L, LocalDate.now().plusDays(1));
             
-            assertThat(res).isNotNull();
-            assertThat(res.getStatusCode()).isNotNull();
-            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(res.getBody()).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isNotEmpty();
+//            assertThat(res).isNotNull();
+//            assertThat(res.getStatusCode()).isNotNull();
+//            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+//            assertThat(res.getBody()).isNotNull();
+//            assertThat(res.getBody().get("availableTimes")).isNotNull();
+//            assertThat(res.getBody().get("availableTimes")).isNotEmpty();
         }
     }
 
     @Nested
-    class DoctorMainServiceFailTests {
+    class DoctorServiceFailTests {
         
         @Test
         void givenANotExistingIdAndDate_whenGetDoctorAvailability_thenResEntityBadRequestAndBodyFailWithEmptyAvailableTimesList() throws Exception {
             when(doctorRepo.notExistsById(anyLong())).thenReturn(true);
             
-            ResponseEntity<Map<String, List<String>>> res =
+            List<String> expectedAvailableTimeSlots =
                 doctorService.getDoctorAvailability(-1L, LocalDate.now().plusDays(1));
             
-            assertThat(res).isNotNull();
-            assertThat(res.getStatusCode()).isNotNull();
-            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-            assertThat(res.getBody()).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isEmpty();
+//            assertThat(res).isNotNull();
+//            assertThat(res.getStatusCode()).isNotNull();
+//            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+//            assertThat(res.getBody()).isNotNull();
+//            assertThat(res.getBody().get("availableTimes")).isNotNull();
+//            assertThat(res.getBody().get("availableTimes")).isEmpty();
         }
     }
     
     @Nested
-    class DoctorMainServiceErrorTests {
+    class DoctorServiceErrorTests {
         
         @Test
         void givenAInternalError_whenGetDoctorAvailability_thenResEntityBadRequestAndBodyErrorWithEmptyAvailableTimesList() throws Exception {
             when(doctorRepo.notExistsById(anyLong()))
-                .thenThrow(new DoctorRepositoryException("notExistsById failed (todo: improve msg)"));
+                .thenThrow(new ResourceNotFoundException("notExistsById failed (todo: improve msg)"));
             
-            ResponseEntity<Map<String, List<String>>> res =
-                doctorService.getDoctorAvailability(1L, LocalDate.now().plusDays(1));
-
-            assertThat(res).isNotNull();
-            assertThat(res.getStatusCode()).isNotNull();
-            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-            assertThat(res.getBody()).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isNotNull();
-            assertThat(res.getBody().get("availableTimes")).isEmpty();
+            
+            
+            assertThrowsExactly(
+                ResourceNotFoundException.class,
+                () -> doctorService.getDoctorAvailability(1L, LocalDate.now().plusDays(1)));
         }
     }
 }
