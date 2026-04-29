@@ -14,7 +14,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     
-    @ExceptionHandler(InvalidJwtTokenException.class) // TODO: ¿nombre handle, handelInvalidToken, handleJwtTokenException ??
+    @ExceptionHandler(InvalidJwtTokenException.class)
     public ProblemDetail handleInvalidJwtToken(InvalidJwtTokenException ex) {
         logger.warn("Authentication Error: {}", ex.getMessage());
         return composeProblem(ex.getStatus(), ex.getMessage());
