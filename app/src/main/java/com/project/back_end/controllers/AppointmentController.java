@@ -81,11 +81,8 @@ public class AppointmentController {
         mainService.isValidToken(token, "doctor");
         long doctorId = mainService.extractSubjectIdFromToken(token, "doctor");
         
-        List<AppointmentDTO> appointsDTO = appointmentService
-            .getAppointments(doctorId, date, patientName)
-                .stream()
-                .map(dtoMapper::mapAppointmentToDTO)
-                .toList();
+        List<AppointmentDTO> appointsDTO = dtoMapper.mapAppointmentsToDTOs(
+            appointmentService.getAppointments(doctorId, date, patientName));
         logger.info("{}getAppointments::", MessageHead.SUCCESS.compose());
         return composeResponse(HttpStatus.OK, "appointments", appointsDTO);
     }
