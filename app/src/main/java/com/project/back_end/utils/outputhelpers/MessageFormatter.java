@@ -43,7 +43,7 @@ public class MessageFormatter {
      * [INFO] -------------------------------------------------------
      * [ERROR] Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
      */
-    public static enum MessageHead {
+    public static enum MsgHeader {
         INFO { public String compose() { return wrapHead(blue(this.toString())); } },
         WARNING { public String compose() { return wrapHead(orange(this.toString())); } },
         CHECK { public String compose() { return wrapHead(green(this.toString())); } },
