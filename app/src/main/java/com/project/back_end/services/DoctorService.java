@@ -8,6 +8,7 @@ import com.project.back_end.models.Doctor;
 import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.utils.TimePeriodOfDay;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static com.project.back_end.config.EntityConstraintsConfig.*;
-import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
 
 @Service
 public class DoctorService {
@@ -45,7 +45,7 @@ public class DoctorService {
         doctorRepo
             .save(doctor)
             .orElseThrow(() -> new ResourceCreationFailedException("Doctor cannot be saved: "));
-        logger.info("{}createDoctor:: {}", MessageHead.SUCCESS.compose(), "Doctor successfully registered");
+        logger.info("{}createDoctor:: {}", MsgHeader.SUCCESS.compose(), "Doctor successfully registered");
     }
     
     /**
@@ -57,10 +57,10 @@ public class DoctorService {
     public List<Doctor> findDoctorsByName(String name) {
         List<Doctor> docs = doctorRepo.findByNameLike(name);
         if (docs.isEmpty()) {
-            logger.warn("{}findDoctorsByName:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}findDoctorsByName:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name containing: " + name);
         } else {
-            logger.info("{}findDoctorsByName:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}findDoctorsByName:: {}", MsgHeader.SUCCESS.compose(),
                 "Doctors found by name containing:" + name + ", with size: " + docs.size());
         }
         return docs;
@@ -79,16 +79,16 @@ public class DoctorService {
     public List<Doctor> filterDoctorsByNameAndSpecialtyAndTimePeriod(String name, String specialty, TimePeriodOfDay period) {
         List<Doctor> docs = doctorRepo.findByNameAndSpecialty(name, specialty);
         if (docs.isEmpty()) {
-            logger.warn("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name like: " + name + ", specialty: " + specialty);
             return docs;
         }
         List<Doctor> filteredDocs = filterDoctorsByTimePeriod(docs, period);
         if (filteredDocs.isEmpty()) {
-            logger.warn("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name like: " + name + ", specialty: " + specialty + " at time period " + period.toString());
         } else {
-            logger.info("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterDoctorsByNameAndSpecialtyAndTimePeriod:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + " doctors found by name like: " + name + ", specialty: " + specialty
                     + " at time period " + period.toString());
         }
@@ -107,16 +107,16 @@ public class DoctorService {
     public List<Doctor> filterDoctorsByTimePeriodAndSpecialty(String specialty, TimePeriodOfDay period) {
         List<Doctor> docs = doctorRepo.findBySpecialtyIgnoreCase(specialty);
         if (docs.isEmpty()) {
-            logger.warn("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by specialty: " + specialty);
             return docs;
         }
         List<Doctor> filteredDocs = filterDoctorsByTimePeriod(docs, period);
         if (filteredDocs.isEmpty()) {
-            logger.warn("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by by specialty: " + specialty + " at time period " + period.toString());
         } else {
-            logger.info("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterDoctorsByTimePeriodAndSpecialty:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + " doctors found by specialty: " + specialty + " at time period " + period.toString());
         }
         return filteredDocs;
@@ -134,16 +134,16 @@ public class DoctorService {
     public List<Doctor> filterDoctorsByNameAndTimePeriod(String name, TimePeriodOfDay period) {
         List<Doctor> docs = doctorRepo.findByNameLike(name);
         if (docs.isEmpty()) {
-            logger.warn("{}filterDoctorsByNameAndTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByNameAndTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name like: " + name);
             return docs;
         }
         List<Doctor> filteredDocs = filterDoctorsByTimePeriod(docs, period);
         if (filteredDocs.isEmpty()) {
-            logger.warn("{}filterDoctorsByNameAndTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByNameAndTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name like: " + name + " at time period " + period.toString());
         } else {
-            logger.info("{}filterDoctorsByNameAndTimePeriod:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterDoctorsByNameAndTimePeriod:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + " doctors found by name like: " + name + " at time period " + period.toString());
         }
         return filteredDocs;
@@ -160,10 +160,10 @@ public class DoctorService {
     public List<Doctor> filterDoctorsByNameAndSpecialty(String name, String specialty) {
         List<Doctor> docs = doctorRepo.findByNameIgnoreCaseAndSpecialty(name, specialty);
         if (docs.isEmpty()) {
-            logger.warn("{}filterDoctorsByNameAndSpecialty:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsByNameAndSpecialty:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by name like: " + name + " and specialty: " + specialty);
         } else {
-            logger.info("{}filterDoctorsByNameAndSpecialty:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterDoctorsByNameAndSpecialty:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + "Doctors found by name like: " + name + " and specialty: " + specialty);
         }
         return docs;
@@ -179,10 +179,10 @@ public class DoctorService {
     public List<Doctor> filterDoctorsBySpecialty(String specialty) {
         List<Doctor> docs = doctorRepo.findBySpecialtyIgnoreCase(specialty);
         if (docs.isEmpty()) {
-            logger.warn("{}filterDoctorsBySpecialty:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterDoctorsBySpecialty:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found by specialty: " + specialty);
         } else {
-            logger.info("{}filterDoctorsBySpecialty:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterDoctorsBySpecialty:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + "Doctors not found by specialty: " + specialty);
         }
         return docs;
@@ -198,17 +198,17 @@ public class DoctorService {
     public List<Doctor> filterAllDoctorsByTimePeriod(TimePeriodOfDay period) {
         List<Doctor> docs = doctorRepo.findAll();
         if (docs.isEmpty()) {
-            logger.warn("{}filterAllDoctorsByTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterAllDoctorsByTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found");
             return docs;
         }
         
         List<Doctor> filteredDocs = filterDoctorsByTimePeriod(docs, period);
         if (filteredDocs.isEmpty()) {
-            logger.warn("{}filterAllDoctorsByTimePeriod:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterAllDoctorsByTimePeriod:: {}", MsgHeader.FAIL.compose(),
                 "Doctors not found at time period " + period.toString());
         } else {
-            logger.info("{}filterAllDoctorsByTimePeriod:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterAllDoctorsByTimePeriod:: {}", MsgHeader.SUCCESS.compose(),
                 docs.size() + " doctors found at time period " + period.toString());
         }
         return filteredDocs;
@@ -245,20 +245,20 @@ public class DoctorService {
     @Transactional
     public List<String> getDoctorAvailability(long id, LocalDate date) {
         if (doctorRepo.notExistsById(id)) {
-            logger.warn("{}getDoctorAvailability:: {}", MessageHead.FAIL.compose(), DOCTOR_ID_NOT_EXISTS_MSG + id);
+            logger.warn("{}getDoctorAvailability:: {}", MsgHeader.FAIL.compose(), DOCTOR_ID_NOT_EXISTS_MSG + id);
             return List.of();
         }
         if (date.isBefore(LocalDate.now())) {
-            logger.warn("{}getDoctorAvailability:: {}", MessageHead.FAIL.compose(), DATE_TIME_AT_FUTURE_MSG + date);
+            logger.warn("{}getDoctorAvailability:: {}", MsgHeader.FAIL.compose(), DATE_TIME_AT_FUTURE_MSG + date);
             return List.of();
         }
         
         List<String> availableTimeSlots = doctorRepo.getDoctorAvailability(id, date);
         if (availableTimeSlots.isEmpty()) {
-            logger.warn("{}getDoctorAvailability:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}getDoctorAvailability:: {}", MsgHeader.FAIL.compose(),
                 "Available time slots not found for doctor ID: " + id + " at date: " + date);
         } else {
-            logger.info("{}getDoctorAvailability:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}getDoctorAvailability:: {}", MsgHeader.SUCCESS.compose(),
                 "Available time slots found: " + availableTimeSlots + " for doctor ID: " + id + " at date: " + date);
         }
         return availableTimeSlots;
@@ -272,9 +272,9 @@ public class DoctorService {
     public List<Doctor> getDoctors() {
         List<Doctor> docs = doctorRepo.findAll();
         if (docs.isEmpty()) {
-            logger.warn("{}getDoctors:: {}", MessageHead.FAIL.compose(), "Doctors not found");
+            logger.warn("{}getDoctors:: {}", MsgHeader.FAIL.compose(), "Doctors not found");
         } else {
-            logger.info("{}getDoctors:: {}", MessageHead.SUCCESS.compose(), "Doctors found with size: " + docs.size());
+            logger.info("{}getDoctors:: {}", MsgHeader.SUCCESS.compose(), "Doctors found with size: " + docs.size());
         }
         return docs;
     }
@@ -290,7 +290,7 @@ public class DoctorService {
         
         doctorRepo.save(doctor)
             .orElseThrow(() -> new DatabaseAccessException("Doctor update failed with ID: " + doctor.getId()));
-        logger.info("{}updateDoctor:: {}", MessageHead.SUCCESS.compose(), "Doctor updated with ID: " + doctor.getId());
+        logger.info("{}updateDoctor:: {}", MsgHeader.SUCCESS.compose(), "Doctor updated with ID: " + doctor.getId());
     }
     
     /**
@@ -304,7 +304,7 @@ public class DoctorService {
     
         appointmentRepo.deleteAllByDoctorId(id);
         doctorRepo.deleteById(id);
-        logger.info("{}deleteDoctor:: {}", MessageHead.SUCCESS.compose(),
+        logger.info("{}deleteDoctor:: {}", MsgHeader.SUCCESS.compose(),
             "Doctor and its associated appointments successfully deleted with ID: " + id);
     }
 }
