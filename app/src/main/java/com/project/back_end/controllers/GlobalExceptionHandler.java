@@ -1,6 +1,7 @@
 package com.project.back_end.controllers;
 
 import com.project.back_end.exceptions.*;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,31 +17,32 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(InvalidJwtTokenException.class)
     public ProblemDetail handleInvalidJwtToken(InvalidJwtTokenException ex) {
-        logger.warn("Authentication Error: {}", ex.getMessage());
-        return composeProblem(ex.getStatus(), ex.getMessage());
+        logger.error("{}Security:: Authentication Error: {}", MsgHeader.ERROR.compose(), ex.getMessage());
+        String clientMsg = "Invalid authentication by JWT token: user not found by this token";
+        return composeProblem(ex.getStatus(), clientMsg);
     }
     
     @ExceptionHandler(ParseJwtTokenException.class)
     public ProblemDetail handleParseJwtToken(ParseJwtTokenException ex) {
-        logger.warn("Authentication Error: {}", ex.getMessage());
+        logger.warn("{}Security:: Authentication Error: {}", MsgHeader.ERROR.compose(), ex.getMessage());
         return composeProblem(ex.getStatus(), ex.getMessage());
     }
     
     @ExceptionHandler(EmailAlreadyRegisteredException.class)
     public ProblemDetail handleEmailAlreadyRegistered(EmailAlreadyRegisteredException ex) {
-        logger.warn("Register Error: {}", ex.getMessage());
+        logger.warn("{}Business Logic:: Register Error: {}", MsgHeader.ERROR.compose(), ex.getMessage());
         return composeProblem(ex.getStatus(), ex.getMessage());
     }
     
     @ExceptionHandler(DatabaseAccessException.class)
     public ProblemDetail handleDatabaseAccess(DatabaseAccessException ex) {
-        logger.warn("Persistence Layer Error: {}", ex.getMessage());
+        logger.warn("{}Persistence:: Infrastructure Error: {}", MsgHeader.ERROR.compose(), ex.getMessage());
         return composeProblem(ex.getStatus(), ex.getMessage());
     }
     
     @ExceptionHandler(CustomCredentialNotFoundException.class)
     public ProblemDetail handleCustomCredentialNotFound(CustomCredentialNotFoundException ex) {
-        logger.warn("Security Layer Error: {}", ex.getMessage());
+        logger.warn("{}Security:: Credentials Error: {}", MsgHeader.ERROR.compose(), ex.getMessage());
         return composeProblem(ex.getStatus(), ex.getMessage());
     }
     

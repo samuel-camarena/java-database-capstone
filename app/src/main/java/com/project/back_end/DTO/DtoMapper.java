@@ -6,7 +6,8 @@ import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class DtoMapper {
         Doctor doctor = doctorRepo
             .findById(appointDTO.getDoctorId())
             .orElseThrow(() -> {
-                logger.warn("{}mapDTOtoAppointment:: {}", MessageHead.FAIL.compose(),
+                logger.warn("{}mapDTOtoAppointment:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
                     "Doctor not found by ID: " + appointDTO.getDoctorId());
                 return new ResourceNotFoundException("Doctor not found by ID: " + appointDTO.getDoctorId());
             });
@@ -38,7 +39,7 @@ public class DtoMapper {
         Patient patient = patientRepo
             .findById(appointDTO.getPatientId())
             .orElseThrow(() -> {
-                logger.warn("{}mapDTOtoAppointment:: {}", MessageHead.FAIL.compose(),
+                logger.warn("{}mapDTOtoAppointment:: {}", MsgHeader.FAIL.compose(),
                     "Patient not found by ID: " + appointDTO.getPatientId());
                 return new ResourceNotFoundException("Patient not found by ID: " + appointDTO.getPatientId());
             });
