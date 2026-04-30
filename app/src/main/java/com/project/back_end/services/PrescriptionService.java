@@ -1,24 +1,16 @@
 package com.project.back_end.services;
 
 import com.project.back_end.exceptions.ResourceCreationFailedException;
-import com.project.back_end.exceptions.ResourceNotFoundException;
 import com.project.back_end.models.Prescription;
 import com.project.back_end.repo.PrescriptionRepository;
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.project.back_end.utils.AppHelper.composeResponse;
-import static com.project.back_end.utils.OperationStatus.*;
-import static com.project.back_end.utils.OperationStatus.SERVER_ERR;
 
 @Service
 public class PrescriptionService {
@@ -45,7 +37,7 @@ public class PrescriptionService {
                 + pres.getAppointmentId());
         
         prescriptionRepo.save(pres);
-        logger.info("{}savePrescription:: {}", MessageHead.SUCCESS.compose(),
+        logger.info("{}savePrescription:: {}", MsgHeader.SUCCESS.compose(),
             "Prescription successfully saved associated to appointment with ID: " +  pres.getAppointmentId());
     }
     
@@ -58,10 +50,10 @@ public class PrescriptionService {
     public List<Prescription> getPrescription(long appointmentId) {
         List<Prescription> prescriptions = prescriptionRepo.findByAppointmentId(appointmentId);
         if (prescriptions.isEmpty()) {
-            logger.warn("{}getPrescription:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}getPrescription:: {}", MsgHeader.FAIL.compose(),
                 "Not found Prescriptions for associated appointment with ID: " + appointmentId);
         } else {
-            logger.info("{}getPrescription:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}getPrescription:: {}", MsgHeader.SUCCESS.compose(),
                 "Found " + prescriptions.size() + " Prescriptions for appointment with ID: " + appointmentId);
         }
         return prescriptions;
