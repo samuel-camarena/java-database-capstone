@@ -11,7 +11,7 @@ public class InvalidJwtTokenException extends BusinessLogicException {
     }
     
     public InvalidJwtTokenException(String message) {
-        super(message != null && message.isBlank() ? message : DEFAULT_MSG, STATUS);
+        super(message == null || message.isBlank() ? DEFAULT_MSG : message , STATUS);
     }
     
     public InvalidJwtTokenException(Throwable cause) {
@@ -19,6 +19,6 @@ public class InvalidJwtTokenException extends BusinessLogicException {
     }
     
     public InvalidJwtTokenException(String message, Throwable cause) {
-        super(message != null && message.isBlank() ? message : DEFAULT_MSG, STATUS, cause);
+        super(message == null || message.isBlank() ? DEFAULT_MSG : message , STATUS, cause);
     }
 }

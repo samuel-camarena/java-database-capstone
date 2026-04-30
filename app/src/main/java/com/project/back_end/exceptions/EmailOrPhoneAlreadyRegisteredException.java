@@ -11,7 +11,7 @@ public class EmailOrPhoneAlreadyRegisteredException extends BusinessLogicExcepti
     }
     
     public EmailOrPhoneAlreadyRegisteredException(String message) {
-        super(message != null && message.isBlank() ? message : DEFAULT_MSG, STATUS);
+        super(message == null || message.isBlank() ? DEFAULT_MSG : message , STATUS);
     }
     
     public EmailOrPhoneAlreadyRegisteredException(Throwable cause) {
@@ -19,6 +19,6 @@ public class EmailOrPhoneAlreadyRegisteredException extends BusinessLogicExcepti
     }
     
     public EmailOrPhoneAlreadyRegisteredException(String message, Throwable cause) {
-        super(message != null && message.isBlank() ? message : DEFAULT_MSG, STATUS, cause);
+        super(message == null || message.isBlank() ? DEFAULT_MSG : message , STATUS, cause);
     }
 }
