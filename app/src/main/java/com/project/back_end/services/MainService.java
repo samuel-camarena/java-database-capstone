@@ -9,7 +9,7 @@ import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import com.project.back_end.utils.TimePeriodOfDay;
-import com.project.back_end.utils.outputhelpers.MessageFormatter;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.project.back_end.models.Doctor.isTimeSlotAvailable;
-import static com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 
 @Service("MainService")
 public class MainService {
@@ -66,13 +65,13 @@ public class MainService {
      */
     public boolean isValidPatient(Patient patient) {
         if (patientRepo.findByEmailOrPhone(patient.getEmail(), patient.getPhone()).isPresent()) {
-            logger.warn("{}isValidPatient:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
+            logger.warn("{}isValidPatient:: {}", MsgHeader.FAIL.compose(),
                 "Invalid patient for new registration with email: " + patient.getEmail() + " or phone: "
                     + patient.getPhone() + " already registered.");
             return false;
         }
         
-        logger.info("{}isValidPatient:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
+        logger.info("{}isValidPatient:: {}", MsgHeader.SUCCESS.compose(),
             "Valid patient for new registration with email: " + patient.getEmail() + " and phone: " + patient.getPhone());
         return true;
     }
@@ -93,7 +92,7 @@ public class MainService {
             .getDoctorAvailability(appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
         
         if (availableTimeSlots.isEmpty()) {
-            logger.warn("{}isValidAppointment:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
+            logger.warn("{}isValidAppointment:: {}", MsgHeader.FAIL.compose(),
                 "Invalid appointment with doctor ID: " + appoint.getDoctor().getId()
                     + ", without available time slots at date: " + appoint.getAppointmentDateOnly());
             return false;
@@ -105,7 +104,7 @@ public class MainService {
                     + " at date: " + appoint.getAppointmentDateOnly());
             return false;
         } else {
-            logger.info("{}isValidAppointment:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
+            logger.info("{}isValidAppointment:: {}", MsgHeader.SUCCESS.compose(),
                 "Doctor's time slots available for doctor's ID: " + appoint.getDoctor().getId()
                     + " at date: " + appoint.getAppointmentDateOnly());
             return true;
@@ -175,7 +174,7 @@ public class MainService {
             throw new CustomCredentialNotFoundException("Wrong password for Doctor login");
         
         String token = tokenService.generateToken(doc.get().getEmail());
-        logger.info("{}validateDoctorLogin:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
+        logger.info("{}validateDoctorLogin:: {}", MsgHeader.SUCCESS.compose(),
             "Login Doctor success with email: " + email);
         return token;
     }
@@ -194,7 +193,7 @@ public class MainService {
         String email = tokenService.extractEmail(token);
         Optional<Patient> patient = patientRepo.findByEmail(email);
         if (patient.isEmpty()) {
-            logger.warn("{}filterPatient:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
+            logger.warn("{}filterPatient:: {}", MsgHeader.FAIL.compose(),
                 "JWT token email not match any patient's while filtering appointments");
             return List.of();
         }
