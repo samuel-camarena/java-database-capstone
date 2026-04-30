@@ -180,26 +180,29 @@ public class MainService {
     }
     
     /**
-     * This method filters a patient's appointment history based on condition and doctor name.
+     * This method filters a patient's appointment history based on status and doctor name.
      * This flexible method supports patient-specific querying and enhances user experience on the client side.<p>
      * * It extracts the email from the JWT token to identify the patient.<br>
-     * * Depending on which filters (condition, doctor name) are provided, it delegates the filtering logic to PatientService.</p>
+     * * Depending on which filters (status, doctor name) are provided, it delegates the filtering logic to PatientService.</p>
      * @param token of type JWT for role patient.
-     * @param condition c
+     * @param status 0 (scheduled) or 1 (completed)
      * @param doctorName n
      * @return If no filters are provided, it retrieves all appointments for the patient.
      */
-    public List<AppointmentDTO> filterPatient(String token, String condition, String doctorName) {
+    public List<Appointment> filterPatient(String token, int status, String doctorName) {
         String email = tokenService.extractEmail(token);
         Optional<Patient> opPatient = patientRepo.findByEmail(email);
-        if (opPatient.isEmpty())
-            throw new ResourceNotFoundException("Patient not found by email: " + email);
+        if (opPatient.isEmpty()) {
+            logger.warn("{}filterPatient:: {}", MessageHead.FAIL.compose(),
+                "JWT token email not match any patient's while filtering appointments");
+            return List.of();
+        }
         long patientId = opPatient.get().getId();
         
-        if (!condition.equals("null")) {
+        if (status == 0 || status == 1) {
             if (!doctorName.equals("null"))
-                return patientService.filterAppointmentsByDoctorAndCondition(patientId, condition, doctorName);
-            return patientService.filterAppointmentsByCondition(patientId, condition);
+                return patientService.filterAppointmentsByDoctorAndCondition(patientId, doctorName, status);
+            return patientService.filterAppointmentsByStatus(patientId, status);
         } else {
             if (!doctorName.equals("null"))
                 return patientService.filterAppointmentsByDoctor(patientId, doctorName);
