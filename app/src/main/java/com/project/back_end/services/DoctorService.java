@@ -2,6 +2,7 @@ package com.project.back_end.services;
 
 import com.project.back_end.exceptions.DatabaseAccessException;
 import com.project.back_end.exceptions.EmailAlreadyRegisteredException;
+import com.project.back_end.exceptions.ResourceCreationFailedException;
 import com.project.back_end.exceptions.ResourceNotFoundException;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.repo.AppointmentRepository;
@@ -37,14 +38,14 @@ public class DoctorService {
      * @param doctor d
      */
     @Transactional
-    public void registerDoctor(Doctor doctor) {
+    public void createDoctor(Doctor doctor) {
         if (doctorRepo.existsByEmail(doctor.getEmail()))
             throw new EmailAlreadyRegisteredException("The email " + doctor.getEmail() + "is already in use.");
         
         doctorRepo
-            .register(doctor)
-            .orElseThrow(() -> new DatabaseAccessException("Doctor cannot be saved: "));
-        logger.info("{}registerDoctor:: {}", MessageHead.SUCCESS.compose(), "Doctor successfully registered");
+            .save(doctor)
+            .orElseThrow(() -> new ResourceCreationFailedException("Doctor cannot be saved: "));
+        logger.info("{}createDoctor:: {}", MessageHead.SUCCESS.compose(), "Doctor successfully registered");
     }
     
     /**
@@ -187,7 +188,6 @@ public class DoctorService {
         return docs;
     }
     
-    
     /**
      * Filters all doctors based on their availability during a specific time period (AM/PM).
      * * The method checks all doctors' available times and returns those available during the specified time period.
@@ -288,7 +288,7 @@ public class DoctorService {
         if (doctorRepo.notExistsById(doctor.getId()))
             throw new ResourceNotFoundException("Doctor not exists by ID: " + doctor.getId());
         
-        doctorRepo.register(doctor)
+        doctorRepo.save(doctor)
             .orElseThrow(() -> new DatabaseAccessException("Doctor update failed with ID: " + doctor.getId()));
         logger.info("{}updateDoctor:: {}", MessageHead.SUCCESS.compose(), "Doctor updated with ID: " + doctor.getId());
     }
@@ -307,5 +307,4 @@ public class DoctorService {
         logger.info("{}deleteDoctor:: {}", MessageHead.SUCCESS.compose(),
             "Doctor and its associated appointments successfully deleted with ID: " + id);
     }
-    
 }
