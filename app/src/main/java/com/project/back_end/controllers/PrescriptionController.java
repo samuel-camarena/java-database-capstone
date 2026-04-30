@@ -4,7 +4,8 @@ import com.project.back_end.models.Prescription;
 import com.project.back_end.services.AppointmentService;
 import com.project.back_end.services.MainService;
 import com.project.back_end.services.PrescriptionService;
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +51,11 @@ public class PrescriptionController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid Prescription prescription) {
         
-        mainService.isValidToken(token, "doctor");
+        mainService.validateToken(token, "doctor");
         
         prescriptionService.savePrescription(prescription);
         appointmentService.updateStatus(prescription.getAppointmentId(), COMPLETED.getValue());
-        logger.info("{}savePrescription:: {}", MessageHead.SUCCESS.compose(), "Prescription successfully saved");
+        logger.info("{}savePrescription:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(), "Prescription successfully saved");
         return composeResponse(HttpStatus.CREATED, "message", "Prescription successfully saved");
     }
     
@@ -72,10 +73,10 @@ public class PrescriptionController {
         @PathVariable("Authorization") @Valid String token,
         @PathVariable @Valid long appointmentId) {
         
-        mainService.isValidToken(token, "doctor");
+        mainService.validateToken(token, "doctor");
         
         List<Prescription> pres = prescriptionService.getPrescription(appointmentId);
-        logger.info("{}getPrescription:: {}", MessageHead.SUCCESS.compose(),
+        logger.info("{}getPrescription:: {}", MsgHeader.SUCCESS.compose(),
             "Prescriptions found for Appointment ID: " + appointmentId);
         return composeResponse(HttpStatus.OK, "prescriptions", pres);
     }
