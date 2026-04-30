@@ -57,7 +57,7 @@ public class DoctorController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid Doctor doctor) {
         
-        mainService.isValidToken(token, "admin");
+        mainService.validateToken(token, "admin");
         doctorService.createDoctor(doctor);
         return composeResponse(HttpStatus.CREATED, "message", "Doctor successfully registered");
     }
@@ -79,7 +79,7 @@ public class DoctorController {
         @PathVariable @Valid long id,
         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Valid LocalDate date) {
         
-        mainService.isValidToken(token, user);
+        mainService.validateToken(token, user);
         return composeResponse(HttpStatus.OK, "availableTimes", doctorService.getDoctorAvailability(id, date));
     }
     
@@ -125,7 +125,7 @@ public class DoctorController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid Doctor doctor) {
         
-        mainService.isValidToken(token, "admin");
+        mainService.validateToken(token, "admin");
         doctorService.updateDoctor(doctor);
         return composeResponse(HttpStatus.OK, "message", "Doctor successfully updated");
     }
@@ -144,7 +144,7 @@ public class DoctorController {
         @PathVariable("Authorization") @Valid String token,
         @PathVariable("id") @Valid long id) {
         
-        mainService.isValidToken(token, "admin");
+        mainService.validateToken(token, "admin");
         doctorService.deleteDoctor(id);
         return composeResponse(HttpStatus.OK, "message",
             "Doctor and its associated appointments successfully deleted");
