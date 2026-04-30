@@ -44,11 +44,11 @@ public class DoctorController {
     }
     
     /**
-     * Handles HTTP POST requests to register a new doctor.<p>
+     * Handles HTTP POST requests to save a new doctor.<p>
      * * Accepts a validated `Doctor` object in the request body and a token for authorization.<br>
      * * Validates the token for the `"admin"` role before proceeding.</p>
      * @param token JWT token for the `"admin"` role
-     * @param doctor to register as new doctor
+     * @param doctor to save as new doctor
      * @return If the doctor already exists, returns a conflict response; otherwise,
      *          adds the doctor and returns a success message.
      */
@@ -58,7 +58,7 @@ public class DoctorController {
         @RequestBody @Valid Doctor doctor) {
         
         mainService.isValidToken(token, "admin");
-        doctorService.registerDoctor(doctor);
+        doctorService.createDoctor(doctor);
         return composeResponse(HttpStatus.CREATED, "message", "Doctor successfully registered");
     }
     
