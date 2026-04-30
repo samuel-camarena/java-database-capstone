@@ -5,6 +5,7 @@ import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.PatientRepository;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
 
 /**
  * MainService layer class for handling business logic.
@@ -51,7 +50,7 @@ public class AppointmentService {
         if (opAppoint.isEmpty())
             throw new ResourceCreationFailedException("Appointment creation failed with object data: " + appoint);
         
-        logger.info("{}bookAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment booked with data: " + appoint);
+        logger.info("{}bookAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appoint);
     }
     
     /**
@@ -74,7 +73,7 @@ public class AppointmentService {
             appoints = appointmentRepo
                 .findByDoctorIdAndAppointmentDate(doctorId, date);
         }
-        logger.info("{}getAppointments:: {}", MessageHead.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
+        logger.info("{}getAppointments:: {}", MsgHeader.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
             + doctorId + ", at day: " + date + " and optional patient name: " + patientName);
         return appoints;
     }
@@ -116,7 +115,7 @@ public class AppointmentService {
             throw new ResourceNotFoundException("Appointment's patient not found by ID: " + appoint.getPatient().getId());
 
         appointmentRepo.save(appoint);
-        logger.info("{}updateAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment updated");
+        logger.info("{}updateAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment updated");
     }
     
     /**
@@ -132,7 +131,7 @@ public class AppointmentService {
         
         opAppoint.get().setStatus(status);
         appointmentRepo.save(opAppoint.get());
-        logger.info("{}updateStatus:: {}", MessageHead.SUCCESS.compose(),
+        logger.info("{}updateStatus:: {}", MsgHeader.SUCCESS.compose(),
             "Appointment status successfully Changed to: " + status);
     }
     
@@ -160,7 +159,7 @@ public class AppointmentService {
             throw new CredentialMismatchedException("Patient authenticated does not match appointment ownership");
         
         appointmentRepo.deleteById(id);
-        logger.info("{}cancelAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment canceled by ID: "
+        logger.info("{}cancelAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment canceled by ID: "
             + id + " and patient ID: " + patient.getId());
     }
     
