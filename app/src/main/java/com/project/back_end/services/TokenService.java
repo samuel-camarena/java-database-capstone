@@ -77,8 +77,13 @@ public class TokenService {
      */
     public String extractEmail(String token) {
         String email = extractClaim(token, Claims::getSubject);
-        logger.info("{}extractEmail:: {}", MessageHead.SUCCESS.compose(), "Subject email extracted from JWT Token: " + email);
-        return email;
+        if (email == null || email.isBlank()) {
+            logger.warn("{}extractEmail:: {}", MessageHead.FAIL.compose(), "Fail JWT token extraction for subject email with token: " + token);
+            return "";
+        } else {
+            logger.info("{}extractEmail:: {}", MessageHead.SUCCESS.compose(), "Success JWT token extraction for subject email: " + email);
+            return email;
+        }
     }
     
     /**
