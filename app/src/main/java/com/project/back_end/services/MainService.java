@@ -1,6 +1,5 @@
 package com.project.back_end.services;
 
-import com.project.back_end.DTO.AppointmentDTO;
 import com.project.back_end.exceptions.*;
 import com.project.back_end.models.Admin;
 import com.project.back_end.models.Appointment;
@@ -10,6 +9,7 @@ import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import com.project.back_end.utils.TimePeriodOfDay;
+import com.project.back_end.utils.outputhelpers.MessageFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.project.back_end.models.Doctor.isTimeSlotAvailable;
-import static com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import static com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 
 @Service("MainService")
 public class MainService {
@@ -44,21 +44,19 @@ public class MainService {
      * This method checks if the provided JWT token is valid for a specific user. It uses the TokenService
      * to perform the validation.
      * * If the token is invalid or expired, it returns a 401 Unauthorized response with an appropriate
-     *   error message. This ensures security by preventing unauthorized access to protected resources.
+     * error message. This ensures security by preventing unauthorized access to protected resources.
+     *
      * @param token t
-     * @param user u
-     * @return boolean true if validation success, otherwise, returns false.
+     * @param user  u
      */
-    public boolean isValidToken(String token, String user) {
+    public void validateToken(String token, String user) {
         if (!tokenService.isValidToken(token, user)) {
-            logger.warn("{}isValidToken:: {}", MessageHead.FAIL.compose(),
-                "Invalid JWT token for user: " + user + " and token: " + token);
-            return false;
+            throw new InvalidJwtTokenException("Invalid authentication by JWT token for user role: "
+                + user + " with JWT token: " + token);
+        } else {
+            logger.info("{}isValidToken:: {}", MsgHeader.SUCCESS.compose(),
+                "Valid JWT token for user role: " + user + " with JWT token: " + token);
         }
-        
-        logger.info("{}isValidToken:: {}", MessageHead.SUCCESS.compose(),
-            "Valid JWT token for user: " + user + " and token: " + token);
-        return true;
     }
     
     /**
@@ -68,13 +66,13 @@ public class MainService {
      */
     public boolean isValidPatient(Patient patient) {
         if (patientRepo.findByEmailOrPhone(patient.getEmail(), patient.getPhone()).isPresent()) {
-            logger.warn("{}isValidPatient:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}isValidPatient:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
                 "Invalid patient for new registration with email: " + patient.getEmail() + " or phone: "
                     + patient.getPhone() + " already registered.");
             return false;
         }
         
-        logger.info("{}isValidPatient:: {}", MessageHead.SUCCESS.compose(),
+        logger.info("{}isValidPatient:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
             "Valid patient for new registration with email: " + patient.getEmail() + " and phone: " + patient.getPhone());
         return true;
     }
@@ -95,19 +93,19 @@ public class MainService {
             .getDoctorAvailability(appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
         
         if (availableTimeSlots.isEmpty()) {
-            logger.warn("{}isValidAppointment:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}isValidAppointment:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
                 "Invalid appointment with doctor ID: " + appoint.getDoctor().getId()
                     + ", without available time slots at date: " + appoint.getAppointmentDateOnly());
             return false;
         }
         
         if (!isTimeSlotAvailable(appoint.getAppointmentTime().toString(), availableTimeSlots)) {
-            logger.warn("{}isValidAppointment:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}isValidAppointment:: {}", MsgHeader.FAIL.compose(),
                 "Doctor's time slots not available for doctor's ID: " + appoint.getDoctor().getId()
                     + " at date: " + appoint.getAppointmentDateOnly());
             return false;
         } else {
-            logger.info("{}isValidAppointment:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}isValidAppointment:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
                 "Doctor's time slots available for doctor's ID: " + appoint.getDoctor().getId()
                     + " at date: " + appoint.getAppointmentDateOnly());
             return true;
@@ -134,7 +132,8 @@ public class MainService {
             throw new CustomCredentialNotFoundException("Wrong password for Admin login");
         
         String token = tokenService.generateToken(opAdmin.get().getUsername());
-        logger.info("{}validateAdminLogin:: {}", MessageHead.SUCCESS.compose(), "Success admin login with username: " + username);
+        logger.info("{}validateAdminLogin:: {}", MsgHeader.SUCCESS.compose(),
+            "Login Admin success with username: " + username);
         return token;
     }
     
@@ -150,14 +149,15 @@ public class MainService {
      * If an exception occurs, it returns a 500 Internal Server Error.
      */
     public String validatePatientLogin(String email, String password) {
-        Optional<Patient> opPatient = patientRepo.findByEmail(email);
-        if (opPatient.isEmpty())
+        Optional<Patient> patient = patientRepo.findByEmail(email);
+        if (patient.isEmpty())
             throw new CustomCredentialNotFoundException("Wrong email for Patient login");
-        if (!opPatient.get().getPassword().equals(password))
+        if (!patient.get().getPassword().equals(password))
             throw new CustomCredentialNotFoundException("Wrong password for Patient login");
         
-        String token = tokenService.generateToken(opPatient.get().getEmail());
-        logger.info("{}validatePatientLogin:: {}", MessageHead.SUCCESS.compose(), "Success login patient with email: " + email);
+        String token = tokenService.generateToken(patient.get().getEmail());
+        logger.info("{}validatePatientLogin:: {}", MsgHeader.SUCCESS.compose(),
+            "Login Patient success with email: " + email);
         return token;
     }
     
@@ -168,14 +168,15 @@ public class MainService {
      * @return It generates a token for the doctor if the login is successful, otherwise returns an error message.
      */
     public String validateDoctorLogin(String email, String password) {
-        Optional<Doctor> opDoc = doctorRepo.findByEmail(email);
-        if (opDoc.isEmpty())
+        Optional<Doctor> doc = doctorRepo.findByEmail(email);
+        if (doc.isEmpty())
             throw new CustomCredentialNotFoundException("Wrong email for Doctor login");
-        if (!opDoc.get().getPassword().equals(password))
+        if (!doc.get().getPassword().equals(password))
             throw new CustomCredentialNotFoundException("Wrong password for Doctor login");
         
-        String token = tokenService.generateToken(opDoc.get().getEmail());
-        logger.info("{}validateDoctorLogin:: {}", MessageHead.SUCCESS.compose(), "Success login doctor " + email);
+        String token = tokenService.generateToken(doc.get().getEmail());
+        logger.info("{}validateDoctorLogin:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(),
+            "Login Doctor success with email: " + email);
         return token;
     }
     
@@ -191,13 +192,13 @@ public class MainService {
      */
     public List<Appointment> filterPatient(String token, int status, String doctorName) {
         String email = tokenService.extractEmail(token);
-        Optional<Patient> opPatient = patientRepo.findByEmail(email);
-        if (opPatient.isEmpty()) {
-            logger.warn("{}filterPatient:: {}", MessageHead.FAIL.compose(),
+        Optional<Patient> patient = patientRepo.findByEmail(email);
+        if (patient.isEmpty()) {
+            logger.warn("{}filterPatient:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
                 "JWT token email not match any patient's while filtering appointments");
             return List.of();
         }
-        long patientId = opPatient.get().getId();
+        long patientId = patient.get().getId();
         
         if (status == 0 || status == 1) {
             if (!doctorName.equals("null"))
