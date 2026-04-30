@@ -75,15 +75,13 @@ public class PatientService {
             return Optional.empty();
         }
         
-        Optional<Patient> op = patientRepo.findByEmail(email);
-        if (op.isEmpty()) {
-            logger.warn("{}getPatientDetails:: {}", MessageHead.FAIL.compose(),
-                "Patient not found by email: " + email);
-        } else {
-            logger.info("{}getPatientDetails:: {}", MessageHead.SUCCESS.compose(),
-                "Patient found by email: " + email);
-        }
-        return op;
+        Optional<Patient> patient = patientRepo.findByEmail(email);
+        patient.ifPresentOrElse(
+            p -> logger.info("{}getPatientDetails:: {}", MessageHead.SUCCESS.compose(),
+                "Patient found by email: " + email),
+            () -> logger.warn("{}getPatientDetails:: {}", MessageHead.FAIL.compose(),
+                "Patient not found by email: " + email));
+        return patient;
     }
     
     /**
