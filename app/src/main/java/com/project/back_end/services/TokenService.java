@@ -5,8 +5,7 @@ import com.project.back_end.exceptions.ParseJwtTokenException;
 import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
-
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class TokenService {
             .signWith(getSigningKey())
             .compact();
         
-        logger.info("{}generateToken:: {}", MessageHead.SUCCESS.compose(), "JWT Token generated for subject: " + subject);
+        logger.info("{}generateToken:: {}", MsgHeader.SUCCESS.compose(), "JWT Token generated for subject: " + subject);
         return jws;
     }
 
@@ -78,10 +77,10 @@ public class TokenService {
     public String extractEmail(String token) {
         String email = extractClaim(token, Claims::getSubject);
         if (email == null || email.isBlank()) {
-            logger.warn("{}extractEmail:: {}", MessageHead.FAIL.compose(), "Fail JWT token extraction for subject email with token: " + token);
+            logger.warn("{}extractEmail:: {}", MsgHeader.FAIL.compose(), "Fail JWT token extraction for subject email with token: " + token);
             return "";
         } else {
-            logger.info("{}extractEmail:: {}", MessageHead.SUCCESS.compose(), "Success JWT token extraction for subject email: " + email);
+            logger.info("{}extractEmail:: {}", MsgHeader.SUCCESS.compose(), "Success JWT token extraction for subject email: " + email);
             return email;
         }
     }
