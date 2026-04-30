@@ -1,6 +1,6 @@
 package com.project.back_end.controllers;
 
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class ValidationFailed {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
         String msg = ex.getConstraintViolations().iterator().next().getMessage();
-        logger.error("{}handleConstraintViolation:: {}", MessageHead.ERROR.compose(), msg);
+        logger.error("{}handleConstraintViolation:: {}", MsgHeader.ERROR.compose(), msg);
         return composeResponse(HttpStatus.BAD_REQUEST, "error", msg);
     }
 }
