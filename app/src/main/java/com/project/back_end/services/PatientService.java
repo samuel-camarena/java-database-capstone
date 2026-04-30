@@ -1,6 +1,5 @@
 package com.project.back_end.services;
 
-import com.project.back_end.DTO.AppointmentDTO;
 import com.project.back_end.DTO.DtoMapper;
 import com.project.back_end.exceptions.EmailAlreadyRegisteredException;
 import com.project.back_end.exceptions.ResourceCreationFailedException;
@@ -8,20 +7,15 @@ import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.PatientRepository;
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static com.project.back_end.utils.AppHelper.composeResponse;
-import static com.project.back_end.utils.OperationStatus.*;
-import static com.project.back_end.utils.OperationStatus.SERVER_ERR;
 
 /**
  * * Use of DTOs (Data Transfer Objects):
@@ -57,7 +51,7 @@ public class PatientService {
         patientRepo
             .save(patient)
             .orElseThrow(() -> new ResourceCreationFailedException("Patient cannot be saved: "));
-        logger.info("{}createPatient:: {}", MessageHead.SUCCESS.compose(), "Patient successfully registered");
+        logger.info("{}createPatient:: {}", MsgHeader.SUCCESS.compose(), "Patient successfully registered");
     }
     
     /**
@@ -70,16 +64,16 @@ public class PatientService {
     public Optional<Patient> getPatientDetails(String token) {
         String email = tokenService.extractEmail(token);
         if (email.isBlank()) {
-            logger.warn("{}getPatientDetails:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}getPatientDetails:: {}", MsgHeader.FAIL.compose(),
                 "Fail getting patient details by wrong email: " + email);
             return Optional.empty();
         }
         
         Optional<Patient> patient = patientRepo.findByEmail(email);
         patient.ifPresentOrElse(
-            p -> logger.info("{}getPatientDetails:: {}", MessageHead.SUCCESS.compose(),
+            p -> logger.info("{}getPatientDetails:: {}", MsgHeader.SUCCESS.compose(),
                 "Patient found by email: " + email),
-            () -> logger.warn("{}getPatientDetails:: {}", MessageHead.FAIL.compose(),
+            () -> logger.warn("{}getPatientDetails:: {}", MsgHeader.FAIL.compose(),
                 "Patient not found by email: " + email));
         return patient;
     }
@@ -93,10 +87,10 @@ public class PatientService {
     public List<Appointment> getPatientAppointment(long patientId) {
         List<Appointment> appoints = appointmentRepo.findByPatientId(patientId);
         if (appoints.isEmpty()) {
-            logger.warn("{}getPatientAppointment:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}getPatientAppointment:: {}", MsgHeader.FAIL.compose(),
                 "Appointments not found by patient ID: " + patientId);
         } else {
-            logger.info("{}getPatientAppointment:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}getPatientAppointment:: {}", MsgHeader.SUCCESS.compose(),
                 appoints.size() + " Appointments found by patient ID: " + patientId);
         }
         return appoints;
@@ -114,10 +108,10 @@ public class PatientService {
         List<Appointment> appoints = appointmentRepo
             .findByPatient_IdAndStatusOrderByAppointmentTimeAsc(patientId, status);
         if (appoints.isEmpty()) {
-            logger.warn("{}filterAppointmentsByStatus:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterAppointmentsByStatus:: {}", MsgHeader.FAIL.compose(),
                 "Appointments not found for patient ID: " + patientId + " and status: " + status);
         } else {
-            logger.info("{}filterAppointmentsByStatus:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterAppointmentsByStatus:: {}", MsgHeader.SUCCESS.compose(),
                 appoints.size() + " appointments found for patient ID: " + patientId + " and status: " + status);
         }
         return appoints;
@@ -135,10 +129,10 @@ public class PatientService {
     public List<Appointment> filterAppointmentsByDoctor(long patientId, String doctorName) {
         List<Appointment> appoints = appointmentRepo.findByDoctorNameAndPatientId(doctorName, patientId);
         if (appoints.isEmpty()) {
-            logger.warn("{}filterAppointmentsByDoctor:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterAppointmentsByDoctor:: {}", MsgHeader.FAIL.compose(),
                 "Appointments not found for patient ID: " + patientId + " and doctor name: " + doctorName);
         } else {
-            logger.info("{}filterAppointmentsByDoctor:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterAppointmentsByDoctor:: {}", MsgHeader.SUCCESS.compose(),
                 appoints.size() + " appointments found for patient ID: " + patientId + " and doctor name: " + doctorName);
         }
         return appoints;
@@ -157,11 +151,11 @@ public class PatientService {
         List<Appointment> appoints = appointmentRepo
             .findByDoctorNameAndPatientIdAndStatus(doctorName, patientId, status);
         if (appoints.isEmpty()) {
-            logger.warn("{}filterAppointmentsByDoctorAndCondition:: {}", MessageHead.FAIL.compose(),
+            logger.warn("{}filterAppointmentsByDoctorAndCondition:: {}", MsgHeader.FAIL.compose(),
                 "Appointments not found for patient ID: " + patientId + ", doctor name: " + doctorName
                     + " and status: " + status);
         } else {
-            logger.info("{}filterAppointmentsByDoctorAndCondition:: {}", MessageHead.SUCCESS.compose(),
+            logger.info("{}filterAppointmentsByDoctorAndCondition:: {}", MsgHeader.SUCCESS.compose(),
                 appoints.size() + " appointments found for patient ID: " + patientId + ", doctor name: " + doctorName
                     + " and status: " + status);
         }
