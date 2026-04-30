@@ -5,7 +5,7 @@ import com.project.back_end.DTO.DtoMapper;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.services.AppointmentService;
 import com.project.back_end.services.MainService;
-import com.project.back_end.utils.outputhelpers.MessageFormatter.MessageHead;
+import com.project.back_end.utils.outputhelpers.MessageFormatter.MsgHeader;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.project.back_end.utils.AppHelper.composeResponse;
-import static com.project.back_end.utils.OperationStatus.SUCCESS;
 
 /**
  * This class centralizes all routes that deal with booking, updating, retrieving, and canceling appointments.
@@ -54,11 +53,11 @@ public class AppointmentController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid AppointmentDTO appointDTO) {
         
-        mainService.isValidToken(token, "patient");
+        mainService.validateToken(token, "patient");
         Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDTO);
         
         appointmentService.bookAppointment(appoint);
-        logger.info("{}bookAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
+        logger.info("{}bookAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
         return composeResponse(HttpStatus.CREATED, "message", "Appointment successfully booked");
     }
     
@@ -78,12 +77,12 @@ public class AppointmentController {
         @PathVariable("date") @Valid LocalDate date,
         @PathVariable("patientName") @Valid String patientName) {
         
-        mainService.isValidToken(token, "doctor");
+        mainService.validateToken(token, "doctor");
         long doctorId = mainService.extractSubjectIdFromToken(token, "doctor");
         
         List<AppointmentDTO> appointsDTO = dtoMapper.mapAppointmentsToDTOs(
             appointmentService.getAppointments(doctorId, date, patientName));
-        logger.info("{}getAppointments::", MessageHead.SUCCESS.compose());
+        logger.info("{}getAppointments::", MsgHeader.SUCCESS.compose());
         return composeResponse(HttpStatus.OK, "appointments", appointsDTO);
     }
     
@@ -102,11 +101,11 @@ public class AppointmentController {
         @PathVariable("Authorization") @Valid String token,
         @RequestBody @Valid AppointmentDTO appointDTO) {
         
-        mainService.isValidToken(token, "patient");
+        mainService.validateToken(token, "patient");
         Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDTO);
         
         appointmentService.updateAppointment(appoint);
-        logger.info("{}updateAppointment::", MessageHead.SUCCESS.compose());
+        logger.info("{}updateAppointment::", MsgHeader.SUCCESS.compose());
         return composeResponse(HttpStatus.OK, "message", "Appointment successfully updated");
     }
     
@@ -124,9 +123,9 @@ public class AppointmentController {
         @PathVariable("Authorization") @Valid String token,
         @PathVariable("id") @Valid long id) {
         
-        mainService.isValidToken(token, "patient");
+        mainService.validateToken(token, "patient");
         appointmentService.cancelAppointment(id, token);
-        logger.info("{}cancelAppointment:: {}", MessageHead.SUCCESS.compose(), "Appointment canceled by ID: "
+        logger.info("{}cancelAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment canceled by ID: "
             + id + " and patient ID: " + mainService.extractSubjectIdFromToken(token, "patient"));
         return composeResponse(HttpStatus.OK, "message", "Appointment successfully canceled");
     }
