@@ -51,6 +51,7 @@ public class PrescriptionController {
         @RequestBody @Valid Prescription prescription) {
         
         mainService.isValidToken(token, "doctor");
+        
         prescriptionService.savePrescription(prescription);
         appointmentService.updateStatus(prescription.getAppointmentId(), COMPLETED.getValue());
         logger.info("{}savePrescription:: {}", MessageHead.SUCCESS.compose(), "Prescription successfully saved");
