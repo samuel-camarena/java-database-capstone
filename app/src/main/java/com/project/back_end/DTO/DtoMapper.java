@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DtoMapper {
     private static final Logger logger = LoggerFactory.getLogger(DtoMapper.class);
@@ -51,6 +53,8 @@ public class DtoMapper {
     }
     
     public AppointmentDTO mapAppointmentToDTO(Appointment appoint) {
+        if (appoint == null) return null;
+        
         return new AppointmentDTO(
             appoint.getId(),
             appoint.getDoctor().getId(),
@@ -64,5 +68,23 @@ public class DtoMapper {
             appoint.getAppointmentTime(),
             appoint.getReasonForVisiting(),
             (appoint.getNotes().isBlank()) ? "" : appoint.getNotes());
+    }
+    
+    public List<AppointmentDTO> mapAppointmentsToDTOs(List<Appointment> appoints) {
+        if (appoints.isEmpty()) return List.of();
+        
+        return appoints
+            .stream()
+            .map(this::mapAppointmentToDTO)
+            .toList();
+    }
+    
+    public List<Appointment> mapDTOsToAppointments(List<AppointmentDTO> appointDTOs) {
+        if (appointDTOs.isEmpty()) return List.of();
+        
+        return appointDTOs
+            .stream()
+            .map(this::mapDTOtoAppointment)
+            .toList();
     }
 }
