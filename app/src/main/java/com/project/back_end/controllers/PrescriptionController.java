@@ -53,9 +53,9 @@ public class PrescriptionController {
         
         mainService.validateToken(token, "doctor");
         
-        prescriptionService.savePrescription(prescription);
+        prescriptionService.createPrescription(prescription);
         appointmentService.updateStatus(prescription.getAppointmentId(), COMPLETED.getValue());
-        logger.info("{}savePrescription:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(), "Prescription successfully saved");
+        logger.info("{}createPrescription:: {}", MessageFormatter.MsgHeader.SUCCESS.compose(), "Prescription successfully saved");
         return composeResponse(HttpStatus.CREATED, "message", "Prescription successfully saved");
     }
     
