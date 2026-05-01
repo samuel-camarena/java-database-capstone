@@ -56,8 +56,8 @@ public class AppointmentController {
         mainService.validateToken(token, "patient");
         Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDTO);
         
-        appointmentService.bookAppointment(appoint);
-        logger.info("{}bookAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
+        appointmentService.createAppointment(appoint);
+        logger.info("{}createAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
         return composeResponse(HttpStatus.CREATED, "message", "Appointment successfully booked");
     }
     
