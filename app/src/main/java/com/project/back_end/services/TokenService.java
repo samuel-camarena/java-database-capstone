@@ -25,14 +25,16 @@ public class TokenService {
     private final AdminRepository adminRepo;
     private final DoctorRepository doctorRepo;
     private final PatientRepository patientRepo;
-    private final int JWT_TOKEN_EXPIRATION_DAYS = 7;
     private final String JWT_SECRET;
+    private final long JWT_TOKEN_EXPIRATION_TIME_MILLIS;
     
     public TokenService(AdminRepository adminRepo, DoctorRepository doctorRepo, PatientRepository patientRepo,
+                        @Value("${jwt.token.expiration.time.millis}") long jwtTokenExpirationTimeMillis,
                         @Value("${jwt.secret}") String jwt_secret) {
         this.adminRepo = adminRepo;
         this.doctorRepo = doctorRepo;
         this.patientRepo = patientRepo;
+        this.JWT_TOKEN_EXPIRATION_TIME_MILLIS = jwtTokenExpirationTimeMillis;
         this.JWT_SECRET = jwt_secret;
     }
     
@@ -54,7 +56,7 @@ public class TokenService {
      */
     public String generateToken(String subject) {
         Date issuedAt = Date.from(Instant.now());
-        Date expireAt = Date.from(Instant.now().plus(JWT_TOKEN_EXPIRATION_DAYS, ChronoUnit.DAYS));
+        Date expireAt = Date.from(Instant.now().plus(JWT_TOKEN_EXPIRATION_TIME_MILLIS, ChronoUnit.MILLIS));
         
         String jws = Jwts.builder()
             .subject(subject)
