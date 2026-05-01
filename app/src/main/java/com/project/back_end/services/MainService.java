@@ -124,13 +124,13 @@ public class MainService {
      * @return returns a JWT token (using the admin’s username)
      */
     public String validateAdminLogin(String username, String password) {
-        Optional<Admin> opAdmin = adminRepo.findByUsername(username);
-        if (opAdmin.isEmpty())
+        Optional<Admin> admin = adminRepo.findByUsername(username);
+        if (admin.isEmpty())
             throw new CustomCredentialNotFoundException("Wrong username for Admin login");
-        if (!opAdmin.get().getPassword().equals(password))
+        if (!admin.get().getPassword().equals(password))
             throw new CustomCredentialNotFoundException("Wrong password for Admin login");
         
-        String token = tokenService.generateToken(opAdmin.get().getUsername());
+        String token = tokenService.generateToken(admin.get().getUsername());
         logger.info("{}validateAdminLogin:: {}", MsgHeader.SUCCESS.compose(),
             "Login Admin success with username: " + username);
         return token;
