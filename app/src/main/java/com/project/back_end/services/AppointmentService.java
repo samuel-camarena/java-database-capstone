@@ -42,15 +42,12 @@ public class AppointmentService {
      * * For future behavior extension it will return the URI of the book.</p>
      * @param appoint a
      */
-    public void bookAppointment(Appointment appoint) {
+    public void createAppointment(Appointment appoint) {
         if (!mainService.isValidAppointment(appoint))
             throw new ResourceCreationFailedException("Appointment creation failed with object data: " + appoint);
         
-        Optional<Appointment> opAppoint = appointmentRepo.book(appoint);
-        if (opAppoint.isEmpty())
-            throw new ResourceCreationFailedException("Appointment creation failed with object data: " + appoint);
-        
-        logger.info("{}bookAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appoint);
+        appointmentRepo.book(appoint);
+        logger.info("{}createAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appoint);
     }
     
     /**
@@ -67,11 +64,11 @@ public class AppointmentService {
         List<Appointment> appoints;
         if (!patientName.equals("null")) {
             appoints = appointmentRepo
-                .findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentDate(
+                .findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTime(
                     doctorId, patientName, date);
         } else {
             appoints = appointmentRepo
-                .findByDoctorIdAndAppointmentDate(doctorId, date);
+                .findByDoctorIdAndAppointmentTime(doctorId, date);
         }
         logger.info("{}getAppointments:: {}", MsgHeader.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
             + doctorId + ", at day: " + date + " and optional patient name: " + patientName);
@@ -87,7 +84,7 @@ public class AppointmentService {
     @Transactional
     public List<Appointment> getAppointmentsByPatientAndDate(String patientName, LocalDate date) {
         List<Appointment> appoints = appointmentRepo
-            .findByPatient_NameContainingIgnoreCaseAndAppointmentDate(patientName, date);
+            .findByPatient_NameContainingIgnoreCaseAndAppointmentTime(patientName, date);
         if (appoints.isEmpty())
             throw new ResourceNotFoundException("Appointments not found by patient name: "
                 + patientName + " and date: " + date);
