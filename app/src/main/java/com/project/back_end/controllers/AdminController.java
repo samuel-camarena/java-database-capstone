@@ -34,5 +34,11 @@ public class AdminController {
         return composeResponse(HttpStatus.OK, "token",
             mainService.validateAdminLogin(admin.getUsername(), admin.getPassword()));
     }
+    
+    @GetMapping("/dashboard/{token}")
+    public String adminDashboard(@PathVariable @Valid String token) {
+        mainService.validateToken(token, "admin");
+        return "admin/adminDashboard";
+    }
 }
 
