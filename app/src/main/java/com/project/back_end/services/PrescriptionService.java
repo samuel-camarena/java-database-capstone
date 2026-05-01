@@ -31,13 +31,13 @@ public class PrescriptionService {
      * @param pres p
      */
     @Transactional
-    public void savePrescription(Prescription pres) {
+    public void createPrescription(Prescription pres) {
         if (!prescriptionRepo.findByAppointmentId(pres.getAppointmentId()).isEmpty())
             throw new ResourceCreationFailedException("Prescription already associated with appointment ID: "
                 + pres.getAppointmentId());
         
         prescriptionRepo.save(pres);
-        logger.info("{}savePrescription:: {}", MsgHeader.SUCCESS.compose(),
+        logger.info("{}createPrescription:: {}", MsgHeader.SUCCESS.compose(),
             "Prescription successfully saved associated to appointment with ID: " +  pres.getAppointmentId());
     }
     
