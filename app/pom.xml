@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.1</version> <!--  Deja que el parent gestione las versiones. No pongas <version> en las dependencias de Spring a menos que sea estrictamente necesario. -->
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.4.1</version>
+		<relativePath/>
 	</parent>
 	<groupId>com.project</groupId>
 	<artifactId>back-end</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1</version>
 	<name>back-end</name>
-	<description>Demo project for Spring Boot</description>
+	<description>SmartCare CRM</description>
 	<url/>
 	<licenses>
 		<license/>
