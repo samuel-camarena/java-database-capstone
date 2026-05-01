@@ -48,9 +48,7 @@ public class PatientService {
         if (patientRepo.existsByEmail(patient.getEmail()))
             throw new EmailAlreadyRegisteredException("The email " + patient.getEmail() + "is already in use.");
         
-        patientRepo
-            .save(patient)
-            .orElseThrow(() -> new ResourceCreationFailedException("Patient cannot be saved: "));
+        patientRepo.save(patient);
         logger.info("{}createPatient:: {}", MsgHeader.SUCCESS.compose(), "Patient successfully registered");
     }
     
