@@ -1,6 +1,7 @@
 package com.project.back_end.repo;
 
 import com.project.back_end.models.Doctor;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -20,7 +21,6 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     
-    Optional<Doctor> save(Doctor doctor);
     /**
      * This method retrieves a Doctor by their email.
      * @param email email
