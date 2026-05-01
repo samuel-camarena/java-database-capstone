@@ -31,14 +31,14 @@ public interface AppointmentRepository  extends JpaRepository<Appointment, Long>
      */
     List<Appointment> findByDoctorIdAndAppointmentTimeBetween(Long doctorId, LocalDateTime start,
                                                               LocalDateTime end);
-    List<Appointment> findByDoctorIdAndAppointmentDate(Long doctorId, LocalDate date);
+    List<Appointment> findByDoctorIdAndAppointmentTime(Long doctorId, LocalDate date);
     
     /**
      * This method retrieves appointments based on a doctor’s name (using a LIKE query) and the patient’s ID.
      */
     List<Appointment> findByDoctorNameAndPatientId(String doctorName, Long patientId);
     
-    List<Appointment> findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentDate(Long doctorId, String patientName, LocalDate date);
+    List<Appointment> findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTime(Long doctorId, String patientName, LocalDate date);
     
     /**
      * This method retrieves appointments based on a doctor’s name (using a LIKE query), patient’s ID, and a specific appointment status.
@@ -58,7 +58,7 @@ public interface AppointmentRepository  extends JpaRepository<Appointment, Long>
      */
     List<Appointment> findByPatientId(Long patientId);
     
-    List<Appointment> findByPatient_NameContainingIgnoreCaseAndAppointmentDate(String patientName, LocalDate date);
+    List<Appointment> findByPatient_NameContainingIgnoreCaseAndAppointmentTime(String patientName, LocalDate date);
     
     /**
      * This method retrieves all appointments for a specific patient with a given status, ordered by the appointment time.
