@@ -16,19 +16,17 @@ import java.util.Optional;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     
-    Optional<Patient> save(Patient patient);
-    
     /**
      * This method retrieves a Patient by their email address.
-     * @param email
+     * @param email e
      * @return Optional of Patient
      */
     Optional<Patient> findByEmail(String email);
     
     /**
      * This method retrieves a Patient by either their email or phone number, allowing flexibility for the search.
-     * @param email
-     * @param phone
+     * @param email e
+     * @param phone p
      * @return Optional of Patient
      */
     Optional<Patient> findByEmailOrPhone(String email, String phone);
