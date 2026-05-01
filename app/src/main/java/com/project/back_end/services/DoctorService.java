@@ -42,9 +42,7 @@ public class DoctorService {
         if (doctorRepo.existsByEmail(doctor.getEmail()))
             throw new EmailAlreadyRegisteredException("The email " + doctor.getEmail() + "is already in use.");
         
-        doctorRepo
-            .save(doctor)
-            .orElseThrow(() -> new ResourceCreationFailedException("Doctor cannot be saved: "));
+        doctorRepo.save(doctor);
         logger.info("{}createDoctor:: {}", MsgHeader.SUCCESS.compose(), "Doctor successfully registered");
     }
     
@@ -288,8 +286,7 @@ public class DoctorService {
         if (doctorRepo.notExistsById(doctor.getId()))
             throw new ResourceNotFoundException("Doctor not exists by ID: " + doctor.getId());
         
-        doctorRepo.save(doctor)
-            .orElseThrow(() -> new DatabaseAccessException("Doctor update failed with ID: " + doctor.getId()));
+        doctorRepo.save(doctor);
         logger.info("{}updateDoctor:: {}", MsgHeader.SUCCESS.compose(), "Doctor updated with ID: " + doctor.getId());
     }
     
