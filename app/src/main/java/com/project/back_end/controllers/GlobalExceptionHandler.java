@@ -52,4 +52,6 @@ public class GlobalExceptionHandler {
         pd.setProperties(Map.of("error", message));
         return pd;
     }
+    
+    
 }
