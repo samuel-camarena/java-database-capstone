@@ -88,7 +88,7 @@ public class DoctorController {
      * * Returns the list within a response map under the key `"doctors"` with HTTP 200 OK status.</p>
      * @return HTTP 200 OK and body with doctor's list
      */
-    @GetMapping("/getDoctors")
+    @GetMapping("")
     public ResponseEntity<Map<String, List<Doctor>>> getDoctors() {
         return composeResponse(HttpStatus.OK, "doctors", doctorService.getDoctors());
     }
