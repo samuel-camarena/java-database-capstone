@@ -2,6 +2,7 @@ package com.project.back_end.repo;
 
 import com.project.back_end.models.Doctor;
 import jakarta.annotation.Nonnull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -21,11 +22,15 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     
+    @EntityGraph(attributePaths = {"availableTimes"})
+    List<Doctor> findAll();
+    
     /**
      * This method retrieves a Doctor by their email.
      * @param email email
      * @return List of Doctors.
      */
+    @EntityGraph(attributePaths = {"availableTimes"})
     Optional<Doctor> findByEmail(String email);
     
     /**
@@ -34,6 +39,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * @param name name
      * @return List of Doctors.
      */
+    @EntityGraph(attributePaths = {"availableTimes"})
     @NativeQuery(value = "SELECT * FROM doctor WHERE name LIKE %?1%")
     List<Doctor> findByNameLike(String name);
     
@@ -45,6 +51,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * @param specialty specialty
      * @return List of Doctors.
      */
+    @EntityGraph(attributePaths = {"availableTimes"})
     List<Doctor> findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(String name, String specialty);
     
     /**
@@ -52,12 +59,16 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * //@param Doctor's specialty.
      * @return List of Doctors.
      */
+    @EntityGraph(attributePaths = {"availableTimes"})
     List<Doctor> findBySpecialtyIgnoreCase(String specialty);
     
+    @EntityGraph(attributePaths = {"availableTimes"})
     List<Doctor> findByNameAndSpecialty(String name, String specialty);
     
+    @EntityGraph(attributePaths = {"availableTimes"})
     List<Doctor> findByNameIgnoreCaseAndSpecialty(String name, String specialty);
     
+    @EntityGraph(attributePaths = {"availableTimes"})
     @NativeQuery(value = "SELECT * FROM doctor d, doctor_available_times dat WHERE TIME(dat.available_times) = TIME(?1) AND dat.doctor_id = d.id")
     List<Doctor> findByAvailableTimesEqualsTime(String timePeriod);
     
