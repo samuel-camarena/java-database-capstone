@@ -1,6 +1,6 @@
 package com.project.back_end.services;
 
-import com.project.back_end.exceptions.DatabaseAccessException;
+import com.project.back_end.exceptions.InvalidJwtTokenException;
 import com.project.back_end.exceptions.ParseJwtTokenException;
 import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
@@ -99,12 +99,20 @@ public class TokenService {
     }
     
     /**
-     * This method extracts the expiration date from the provided JWT token, and checks if it has already expired.<p>
+     * This method extracts the expiration date from the provided JWT token.<p>
      * @param token JWT token to be parsed.
      * @return true if it has expired, false on contrary.
      */
-    public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+    public Date extractExpirationDate(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+    
+    /**
+     * This method returns de time until expiration of the JWT token, converted to milliseconds.<p>
+     */
+    public long getMillisUntilExpiration(String token) {
+        Date expiration = extractExpirationDate(token);
+        return expiration.getTime() - System.currentTimeMillis();
     }
     
     /**
@@ -132,8 +140,12 @@ public class TokenService {
                 .parseSignedClaims(token)
                 .getPayload();
         
-        } catch (Exception e) {
-            throw new ParseJwtTokenException("Error while parsing JWT Token to extract all Claims");
+        } catch (ExpiredJwtException e) {
+            logger.warn("{}extractAllClaims:: {}", MsgHeader.FAIL.compose(), "JWT Token has expired: " + e.getMessage());
+            throw new InvalidJwtTokenException("Token expired"); // O una sub-excepción ExpiredTokenException
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("{}extractAllClaims:: {}", MsgHeader.ERROR.compose(), "Invalid JWT Token: " + e.getMessage());
+            throw new ParseJwtTokenException("Error while parsing JWT Token");
         }
     }
 
@@ -149,15 +161,18 @@ public class TokenService {
      *         it returns false, indicating the token is invalid.
      */
     public boolean isValidToken(String token, String user) {
-        try {
-            return switch (user) {
-                case "admin" -> adminRepo.findByUsername(extractUsername(token)).isPresent() && !isTokenExpired(token);
-                case "doctor" -> doctorRepo.findByEmail(extractEmail(token)).isPresent() && !isTokenExpired(token);
-                case "patient" -> patientRepo.findByEmail(extractEmail(token)).isPresent() && !isTokenExpired(token);
-                default -> false;
-            };
-        } catch (Exception e) {
-            throw new DatabaseAccessException("Error in isValidToken while accessing to repositories.");
+        String identifier = (user.equals("admin")) ? extractUsername(token) : extractEmail(token);
+        
+        boolean userExists = switch (user) {
+            case "admin" -> adminRepo.findByUsername(extractUsername(token)).isPresent();
+            case "doctor" -> doctorRepo.findByEmail(extractEmail(token)).isPresent();
+            case "patient" -> patientRepo.findByEmail(extractEmail(token)).isPresent();
+            default -> false;
+        };
+        
+        if (!userExists) {
+            logger.warn("{}isValidToken:: {}", MsgHeader.FAIL.compose(), "User not found in repository for role: " + user);
         }
+        return userExists;
     }
 }
