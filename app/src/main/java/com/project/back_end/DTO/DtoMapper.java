@@ -25,32 +25,32 @@ public class DtoMapper {
         this.patientRepo = patientRepo;
     }
     
-    public Appointment mapDTOtoAppointment(AppointmentDTO appointDTO) {
-        if (appointDTO == null) return null;
+    public Appointment mapDTOtoAppointment(AppointmentDTO dto) {
+        if (dto == null) return null;
         
         Doctor doctor = doctorRepo
-            .findById(appointDTO.getDoctorId())
+            .findById(dto.getDoctorId())
             .orElseThrow(() -> {
                 logger.warn("{}mapDTOtoAppointment:: {}", MessageFormatter.MsgHeader.FAIL.compose(),
-                    "Doctor not found by ID: " + appointDTO.getDoctorId());
-                return new ResourceNotFoundException("Doctor not found by ID: " + appointDTO.getDoctorId());
+                    "Doctor not found by ID: " + dto.getDoctorId());
+                return new ResourceNotFoundException("Doctor not found by ID: " + dto.getDoctorId());
             });
         
         Patient patient = patientRepo
-            .findById(appointDTO.getPatientId())
+            .findById(dto.getPatientId())
             .orElseThrow(() -> {
                 logger.warn("{}mapDTOtoAppointment:: {}", MsgHeader.FAIL.compose(),
-                    "Patient not found by ID: " + appointDTO.getPatientId());
-                return new ResourceNotFoundException("Patient not found by ID: " + appointDTO.getPatientId());
+                    "Patient not found by ID: " + dto.getPatientId());
+                return new ResourceNotFoundException("Patient not found by ID: " + dto.getPatientId());
             });
         
         return new Appointment(
             doctor,
             patient,
-            appointDTO.getAppointmentDateTime(),
-            appointDTO.getStatus(),
-            appointDTO.getReasonForVisiting(),
-            appointDTO.getNotes());
+            dto.getAppointmentDateTime(),
+            dto.getStatus(),
+            dto.getReasonForVisiting(),
+            dto.getNotes());
     }
     
     public AppointmentDTO mapAppointmentToDTO(Appointment appoint) {
@@ -80,12 +80,45 @@ public class DtoMapper {
             .toList();
     }
     
-    public List<Appointment> mapDTOsToAppointments(List<AppointmentDTO> appointDTOs) {
-        if (appointDTOs.isEmpty()) return List.of();
+    public List<Appointment> mapDTOsToAppointments(List<AppointmentDTO> dtos) {
+        if (dtos.isEmpty()) return List.of();
         
-        return appointDTOs
+        return dtos
             .stream()
             .map(this::mapDTOtoAppointment)
             .toList();
+    }
+    
+    public DoctorDTO mapDoctorToDTO(Doctor doctor) {
+        if (doctor == null) return null;
+        
+        return new DoctorDTO(
+            (doctor.getId() > 0) ? doctor.getId() : 0,
+            doctor.getName(),
+            doctor.getEmail(),
+            doctor.getPassword(),
+            doctor.getSpecialty(),
+            doctor.getPhone(),
+            doctor.getAvailableTimes(),
+            doctor.getYearsOfExperience(),
+            doctor.getClinicAddress(),
+            doctor.getRating());
+    }
+    
+    public Doctor mapDTOtoDoctor(DoctorDTO dto) {
+        if (dto == null) return null;
+        
+        return new Doctor.Builder()
+            .id(dto.getId() > 0 ? dto.getId() : 0)
+            .name(dto.getName())
+            .specialty(dto.getSpecialty())
+            .password(dto.getPassword())
+            .email(dto.getEmail())
+            .phone(dto.getPhone())
+            .availableTimes(dto.getAvailableTimes())
+            .clinicAddress(dto.getClinicAddress())
+            .yearsOfExperience(dto.getYearsOfExperience())
+            .rating(dto.getRating())
+            .build();
     }
 }
