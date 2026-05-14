@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.back_end.models.Doctor.isTimeSlotAvailable;
+import static com.project.back_end.models.TimeSlot.isTimeSlotAvailable;
 
 @Service("MainService")
 public class MainService {
@@ -92,23 +92,30 @@ public class MainService {
             .getDoctorAvailability(appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
         
         if (availableTimeSlots.isEmpty()) {
-            logger.warn("{}isValidAppointment:: {}", MsgHeader.FAIL.compose(),
-                "Invalid appointment with doctor ID: " + appoint.getDoctor().getId()
-                    + ", without available time slots at date: " + appoint.getAppointmentDateOnly());
+            logger.warn("Invalid appointment via isValid appointment for doctor's ID: {}, out of available time slots at date: {}",
+                appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
             return false;
         }
         
-        if (!isTimeSlotAvailable(appoint.getAppointmentTime().toString(), availableTimeSlots)) {
-            logger.warn("{}isValidAppointment:: {}", MsgHeader.FAIL.compose(),
-                "Doctor's time slots not available for doctor's ID: " + appoint.getDoctor().getId()
-                    + " at date: " + appoint.getAppointmentDateOnly());
-            return false;
-        } else {
-            logger.info("{}isValidAppointment:: {}", MsgHeader.SUCCESS.compose(),
-                "Doctor's time slots available for doctor's ID: " + appoint.getDoctor().getId()
-                    + " at date: " + appoint.getAppointmentDateOnly());
+        if (isTimeSlotAvailable(appoint.getAppointmentTime().toString(), availableTimeSlots)) {
+            logger.info("Time slots available via isValid appointment for doctor's ID: {}, at date: {}"
+                , appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
             return true;
+        } else {
+            logger.warn("Time slots not available via isValid appointment for doctor's ID: {}, at date: {}"
+                , appoint.getDoctor().getId(), appoint.getAppointmentDateOnly());
+            return false;
         }
+    }
+    
+    public String validateUserLogin(String username, String password, String role) {
+        // prepare for role = "clinic staff", or "staff".
+        return switch (role) {
+            case "admin" -> validateAdminLogin(username, password);
+            case "doctor" -> validateDoctorLogin(username, password);
+            case "patient" -> validatePatientLogin(username, password);
+            default -> throw new CustomCredentialNotFoundException("Wrong role for user login");
+        };
     }
     
     /**
@@ -132,7 +139,7 @@ public class MainService {
         
         String token = tokenService.generateToken(admin.get().getUsername());
         logger.info("{}validateAdminLogin:: {}", MsgHeader.SUCCESS.compose(),
-            "Login Admin success with username: " + username);
+            "LoginDTO Admin success with username: " + username);
         return token;
     }
     
@@ -156,7 +163,7 @@ public class MainService {
         
         String token = tokenService.generateToken(patient.get().getEmail());
         logger.info("{}validatePatientLogin:: {}", MsgHeader.SUCCESS.compose(),
-            "Login Patient success with email: " + email);
+            "LoginDTO Patient success with email: " + email);
         return token;
     }
     
@@ -175,7 +182,7 @@ public class MainService {
         
         String token = tokenService.generateToken(doc.get().getEmail());
         logger.info("{}validateDoctorLogin:: {}", MsgHeader.SUCCESS.compose(),
-            "Login Doctor success with email: " + email);
+            "LoginDTO Doctor success with email: " + email);
         return token;
     }
     
@@ -209,40 +216,7 @@ public class MainService {
             return patientService.getPatientAppointment(patientId);
         }
     }
-    
-    /**
-     * This method provides filtering functionality for doctors based on name, specialty, and available time slots.
-     * This flexible filtering mechanism allows the frontend or consumers of the API to search and
-     * narrow down doctors based on user criteria.<p>
-     * * It supports various combinations of the three filters.<br>
-     * * If none of the filters are provided, it returns all available doctors.</p>
-     * @param name doctor's name
-     * @param specialty doctor's specialty
-     * @param period TimePeriodOfDay
-     * @return List of doctors
-     */
-    public List<Doctor> filterDoctor(String name, String specialty, TimePeriodOfDay period) {
-        if (!name.equals("null")) {
-            if (!specialty.equals("null")) {
-                if (period != null)
-                    return doctorService.filterDoctorsByNameAndSpecialtyAndTimePeriod(name, specialty, period);
-                return doctorService.filterDoctorsByNameAndSpecialty(name, specialty);
-            } else {
-                if (period != null)
-                    return doctorService.filterDoctorsByNameAndTimePeriod(name, period);
-                return doctorService.findDoctorsByName(name);
-            }
-        } else {
-            if (!specialty.equals("null")) {
-                if (period != null)
-                    return doctorService.filterDoctorsByTimePeriodAndSpecialty(specialty, period);
-                return doctorService.filterDoctorsBySpecialty(specialty);
-            } else {
-                return doctorService.filterAllDoctorsByTimePeriod(period);
-            }
-        }
-    }
-    
+
     public long extractSubjectIdFromToken(String token, String user) {
         switch(user) {
             case "patient" -> {
