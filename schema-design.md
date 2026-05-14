@@ -75,35 +75,126 @@
 #### 2.2.1. Collection: prescriptions
 ```json
 {
-  "_id": "ObjectId('')",
-  "patientName": "VARCHAR()",
-  "appointmentId": "INT",
-  "medication": "VARCHAR()",
-  "dosage": "VARCHAR(min = 3, max = 20)",
-  "doctorNotesID": "-> (max = 200)",
-  "refillCount": "INT",
-  "pharmacyID": "ObjectPharmacy"
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "_id",
+            "_class",
+            "appointmentId",
+            "dosage",
+            "medication",
+            "patientName"
+        ],
+        "properties": {
+            "_id": {
+                "bsonType": "objectId"
+            },
+            "_class": {
+                "bsonType": "string"
+            },
+            "appointmentId": {
+                "bsonType": "int"
+            },
+            "doctorNotes": {
+                "bsonType": "string",
+                "maxLength": 200
+            },
+            "dosage": {
+                "bsonType": "string",
+                "minLength": 3,
+                "maxLength": 20
+            },
+            "medication": {
+                "bsonType": "string"
+            },
+            "patientName": {
+                "bsonType": "string"
+            }
+        }
+    }
 }
 ```
 
 #### 2.2.2. Collection: notes
 ```json
 {
-  "_id": "INT, Primary Key, Auto Increment",
-  "doctorID": "INT, Foreign Key → Doctors(ID)",
-  "title": "VARCHAR(100)",
-  "description": "VARCHAR(1000)",
-  "creationAt": "DATETIME, NOT NULL"
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "_id",
+            "_class",
+            "doctorId",
+            "title",
+            "description",
+            "creationAt"
+        ],
+        "properties": {
+            "_id": {
+                "bsonType": "objectId"
+            },
+            "_class": {
+                "bsonType": "string"
+            },
+            "doctorId": {
+                "bsonType": "int"
+            },
+            "title": {
+                "bsonType": "string",
+                "maxLength": 100
+            },
+            "description": {
+                "bsonType": "string",
+                "maxLength": 1000
+            },
+            "creationAt": {
+                "bsonType": "date"
+            },
+        }
+    }
 }
 ```
 
 #### 2.2.3. Collection: feedbacks
 ```json
 {
-  "_id": "INT, Primary Key, Auto Increment",
-  "doctorID": "INT, Foreign Key → Doctors(ID)",
-  "title": "VARCHAR(100)",
-  "description": "VARCHAR(1000)",
-  "creationAt": "DATETIME, NOT NULL"
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "_id",
+            "_class",
+            "patientId",
+            "title",
+            "description",
+            "rating",
+            "creationAt"
+        ],
+        "properties": {
+            "_id": {
+                "bsonType": "objectId"
+            },
+            "_class": {
+                "bsonType": "string"
+            },
+            "patientId": {
+                "bsonType": "int"
+            },
+            "title": {
+                "bsonType": "string",
+                "maxLength": 100
+            },
+            "description": {
+                "bsonType": "string",
+                "maxLength": 1000
+            },
+            "rating": {
+                "bsonType": "int",
+                "minimum": 1,
+                "maximum": 5
+            },
+            "creationAt": {
+                "bsonType": "date"
+            },
+        }
+    }
 }
 ```
