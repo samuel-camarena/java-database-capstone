@@ -65,7 +65,7 @@ public class TokenService {
             .signWith(getSigningKey())
             .compact();
         
-        logger.info("{}generateToken:: {}", MsgHeader.SUCCESS.compose(), "JWT Token generated for subject: " + subject);
+        logger.info("JWT Token generated for subject: {}", subject);
         return jws;
     }
 
@@ -79,10 +79,10 @@ public class TokenService {
     public String extractEmail(String token) {
         String email = extractClaim(token, Claims::getSubject);
         if (email == null || email.isBlank()) {
-            logger.warn("{}extractEmail:: {}", MsgHeader.FAIL.compose(), "Fail JWT token extraction for subject email with token: " + token);
+            logger.warn("Fail JWT token extraction for subject email with token: {}", token);
             return "";
         } else {
-            logger.info("{}extractEmail:: {}", MsgHeader.SUCCESS.compose(), "Success JWT token extraction for subject email: " + email);
+            logger.info("Success JWT token extraction for subject email: {}", email);
             return email;
         }
     }
@@ -101,7 +101,7 @@ public class TokenService {
     /**
      * This method extracts the expiration date from the provided JWT token.<p>
      * @param token JWT token to be parsed.
-     * @return true if it has expired, false on contrary.
+     * @return Date claim of expiration.
      */
     public Date extractExpirationDate(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -141,10 +141,10 @@ public class TokenService {
                 .getPayload();
         
         } catch (ExpiredJwtException e) {
-            logger.warn("{}extractAllClaims:: {}", MsgHeader.FAIL.compose(), "JWT Token has expired: " + e.getMessage());
+            logger.warn("JWT Token has expired: {}", e.getMessage());
             throw new InvalidJwtTokenException("Token expired"); // O una sub-excepción ExpiredTokenException
         } catch (JwtException | IllegalArgumentException e) {
-            logger.error("{}extractAllClaims:: {}", MsgHeader.ERROR.compose(), "Invalid JWT Token: " + e.getMessage());
+            logger.error("Invalid JWT Token: {}", e.getMessage());
             throw new ParseJwtTokenException("Error while parsing JWT Token");
         }
     }
@@ -171,7 +171,7 @@ public class TokenService {
         };
         
         if (!userExists) {
-            logger.warn("{}isValidToken:: {}", MsgHeader.FAIL.compose(), "User not found in repository for role: " + user);
+            logger.warn("User not found in repository for role: {}", user);
         }
         return userExists;
     }
