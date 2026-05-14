@@ -3,23 +3,20 @@ package com.project.back_end.utils;
 public enum TimePeriodOfDay {
     AM,
     PM;
+    
+    public String mapTimePeriodToStringAmOrPm(TimePeriodOfDay dayPeriod) {
+        if (dayPeriod == null) return "";
 
-    public boolean isAtThisTimeOfDay(String availableTime) {
-        if (availableTime == null || availableTime.isBlank())
-            throw new IllegalArgumentException("Available time must not be null nor blank");
-        
-        boolean isAtAm = Integer.parseInt(availableTime.substring(0, 2)) < 12;
-        if (this.equals(AM)) { // availableTime -> 11:00-12:00 -> substring(0, 2) = 11
-            return isAtAm;
-        } else {
-            return !isAtAm;
-        }
+        return dayPeriod.equals(AM) ? "AM" : "PM";
     }
     
-    public static TimePeriodOfDay mapToTimePeriod(String timePeriod) {
-        if (timePeriod == null || timePeriod.isBlank()) {
-            return null;
-        }
-        return (AM.toString().equalsIgnoreCase(timePeriod)) ? AM : PM;
+    public static TimePeriodOfDay mapStringAmOrPmToTimePeriod(String amOrPm) {
+        if (amOrPm == null || amOrPm.isBlank()) return null;
+        
+        return switch (amOrPm.toLowerCase()) {
+            case "am" -> AM;
+            case "pm" -> PM;
+            default -> null;
+        };
     }
 }
