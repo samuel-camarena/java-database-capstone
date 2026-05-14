@@ -1,9 +1,11 @@
 package com.project.back_end.controllers;
 
-import com.project.back_end.DTO.Login;
+import com.project.back_end.DTO.DtoMapper;
+import com.project.back_end.DTO.LoginDTO;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.services.DoctorService;
 import com.project.back_end.services.MainService;
+import com.project.back_end.utils.TimePeriodOfDay;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,31 +18,33 @@ import java.util.List;
 import java.util.Map;
 
 import static com.project.back_end.utils.AppHelper.composeResponse;
-import static com.project.back_end.utils.TimePeriodOfDay.mapToTimePeriod;
+import static com.project.back_end.utils.TimePeriodOfDay.mapStringAmOrPmToTimePeriod;
 
 @RestController
 @RequestMapping("${api.path}" + "v1/doctor")
 public class DoctorController {
     private final DoctorService doctorService;
     private final MainService mainService;
+    private final DtoMapper dtoMapper;
     
     @Autowired
-    public DoctorController(DoctorService doctorService, MainService mainService) {
+    public DoctorController(DoctorService doctorService, MainService mainService,  DtoMapper dtoMapper) {
         this.doctorService = doctorService;
         this.mainService = mainService;
+        this.dtoMapper = dtoMapper;
     }
     
     /**
      * Handles HTTP POST requests for doctor login.
-     * * Accepts a validated `Login` DTO containing credentials.
+     * * Accepts a validated `LoginDTO` DTO containing credentials.
      * * Delegates authentication to the `DoctorService` and returns login status and token information.
-     * @param loginDTO username / email, password
+     * @param loginDto username / email, password
      * @return returns login status and token information.
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody @Valid Login loginDTO) {
+    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody @Valid LoginDTO loginDto) {
         return composeResponse(HttpStatus.OK, "token",
-            mainService.validateDoctorLogin(loginDTO.getIdentifier(), loginDTO.getPassword()));
+            mainService.validateDoctorLogin(loginDto.getIdentifier(), loginDto.getPassword()));
     }
     
     /**
@@ -53,11 +57,12 @@ public class DoctorController {
      *          adds the doctor and returns a success message.
      */
     @PostMapping("/{token}")
-    public ResponseEntity<Map<String, String>> registerDoctor(
-        @PathVariable("Authorization") @Valid String token,
+    public ResponseEntity<Map<String, String>> createDoctor(
+        @PathVariable @Valid String token,
         @RequestBody @Valid Doctor doctor) {
         
         mainService.validateToken(token, "admin");
+        //Doctor doc = dtoMapper.mapDTOtoDoctor(doctorDto);
         doctorService.createDoctor(doctor);
         return composeResponse(HttpStatus.CREATED, "message", "Doctor successfully registered");
     }
@@ -74,8 +79,10 @@ public class DoctorController {
      */
     @GetMapping("/availability/{id}/{date}/{user}/{token}")
     public ResponseEntity<Map<String, List<String>>> getDoctorAvailability(
-        @PathVariable("X-User") @Valid String user,
-        @PathVariable("Authorization") @Valid String token,
+        //@PathVaria
+        // ble("X-User") @Valid String user,
+        @PathVariable @Valid String user,
+        @PathVariable @Valid String token,
         @PathVariable @Valid long id,
         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Valid LocalDate date) {
         
@@ -89,26 +96,44 @@ public class DoctorController {
      * @return HTTP 200 OK and body with doctor's list
      */
     @GetMapping("")
-    public ResponseEntity<Map<String, List<Doctor>>> getDoctors() {
-        return composeResponse(HttpStatus.OK, "doctors", doctorService.getDoctors());
+    public ResponseEntity<Map<String, List<Doctor>>> getAllDoctors() {
+        return composeResponse(HttpStatus.OK, "doctors", doctorService.getAllDoctors());
     }
     
     /**
      * Handles HTTP GET requests to filter doctors based on name, time, and specialty.<p>
      * * Calls the shared `MainService` to perform filtering logic and returns matching doctors in the response.</p>
      * @param name contained partially in doctor's name.
-     * @param time for appointment availability.
+     * @param amOrPm for appointment availability.
      * @param specialty of doctors.
      * @return ResponseEntity<Map<String, List<Doctor>>>
      */
-    @GetMapping("/filer/{name}/{time}/{specialty}")
-    public ResponseEntity<Map<String, List<Doctor>>> filterDoctors(
-        @PathVariable @Valid String name,
-        @PathVariable @Valid String time,
-        @PathVariable @Valid String specialty) {
+    @GetMapping("/filter")
+    public ResponseEntity<Map<String, List<Doctor>>> filterAllDoctorsV2(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String amOrPm,
+        @RequestParam(required = false) String specialty) {
         
-        return composeResponse(HttpStatus.OK, "doctors", mainService.filterDoctor(name, specialty, mapToTimePeriod(time)));
+        name = sanitizeStringParam(name);
+        specialty = sanitizeStringParam(specialty);
+        TimePeriodOfDay period = sanitizeStringTimePeriodOfDay(amOrPm);
+        
+        return composeResponse(HttpStatus.OK, "doctors", filterDoctors(name, specialty, period));
     }
+    
+    @GetMapping("/filter/{name}/{time}/{specialty}/{token}")
+    public ResponseEntity<Map<String, List<Doctor>>> filterAllDoctors(
+        @PathVariable String name,
+        @PathVariable String time,
+        @PathVariable String specialty) {
+        
+        name = sanitizeStringParam(name);
+        specialty = sanitizeStringParam(specialty);
+        TimePeriodOfDay period = sanitizeStringTimePeriodOfDay(time);
+        
+        return composeResponse(HttpStatus.OK, "doctors", filterDoctors(name, specialty, period));
+    }
+    
     
     /**
      * Handles HTTP PUT requests to update an existing doctor's information.<p>
@@ -122,10 +147,12 @@ public class DoctorController {
      */
     @PutMapping("/{token}")
     public ResponseEntity<Map<String, String>> updateDoctor(
-        @PathVariable("Authorization") @Valid String token,
+        //@PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid String token,
         @RequestBody @Valid Doctor doctor) {
         
         mainService.validateToken(token, "admin");
+        //Doctor doc = dtoMapper.mapDTOtoDoctor(doctorDto);
         doctorService.updateDoctor(doctor);
         return composeResponse(HttpStatus.OK, "message", "Doctor successfully updated");
     }
@@ -141,7 +168,7 @@ public class DoctorController {
      */
     @DeleteMapping("/{id}/{token}")
     public ResponseEntity<Map<String, String>> deleteDoctor(
-        @PathVariable("Authorization") @Valid String token,
+        @PathVariable("token") @Valid String token,
         @PathVariable("id") @Valid long id) {
         
         mainService.validateToken(token, "admin");
@@ -150,5 +177,52 @@ public class DoctorController {
             "Doctor and its associated appointments successfully deleted");
     }
     
+    /**
+     * This method provides optional filtering functionality for doctors based on name, specialty, and available time slots.<br>
+     * This flexible filtering mechanism allows the frontend or consumers of the API to search and
+     * narrow down doctors based on user criteria by any of the three filters.<p>
+     * * If none of the filters are provided, it returns all available doctors.</p>
+     * @param name doctor's name
+     * @param specialty doctor's specialty
+     * @param period TimePeriodOfDay
+     * @return List of doctors
+     */
+    private List<Doctor> filterDoctors(String name, String specialty, TimePeriodOfDay period) {
+        if (name.isBlank()) {
+            if (specialty.isBlank()) {
+                if (period == null) {
+                    return doctorService.getAllDoctors();
+                }
+                return doctorService.filterAllDoctorsByTimePeriod(period);
+            } else {
+                if (period == null) {
+                    return doctorService.filterDoctorsBySpecialty(specialty);
+                }
+                return doctorService.filterDoctorsByTimePeriodAndSpecialty(specialty, period);
+            }
+        } else {
+            if (specialty.isBlank()) {
+                if (period == null) {
+                    return doctorService.findDoctorsByName(name);
+                }
+                return doctorService.filterDoctorsByNameAndTimePeriod(name, period);
+            } else {
+                if (period == null) {
+                    return doctorService.filterDoctorsByNameAndSpecialty(name, specialty);
+                }
+                return doctorService.filterDoctorsByNameAndSpecialtyAndTimePeriod(name, specialty, period);
+            }
+        }
+    }
+    
+    private String sanitizeStringParam(String param) {
+        if (param == null || param.isBlank() || param.equalsIgnoreCase("null")) {
+            return "";
+        }
+        return param;
+    }
 
+    private TimePeriodOfDay sanitizeStringTimePeriodOfDay(String period) {
+        return mapStringAmOrPmToTimePeriod(period);
+    }
 }
