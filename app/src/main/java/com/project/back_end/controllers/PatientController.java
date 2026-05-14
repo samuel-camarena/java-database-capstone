@@ -2,7 +2,7 @@ package com.project.back_end.controllers;
 
 import com.project.back_end.DTO.AppointmentDTO;
 import com.project.back_end.DTO.DtoMapper;
-import com.project.back_end.DTO.Login;
+import com.project.back_end.DTO.LoginDTO;
 import com.project.back_end.exceptions.EmailOrPhoneAlreadyRegisteredException;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Patient;
@@ -43,7 +43,7 @@ public class PatientController {
      * @return If the token is valid, returns patient information; otherwise, returns an appropriate error message.
      */
     @GetMapping("/{token}")
-    public ResponseEntity<Map<String, Patient>> getPatient(@PathVariable("Authorization") @Valid String token) {
+    public ResponseEntity<Map<String, Patient>> getPatient(@PathVariable @Valid String token) {
         mainService.validateToken(token, "patient");
         return composeResponse(HttpStatus.OK, "patient", patientService.getPatientDetails(token).get());
     }
@@ -67,15 +67,15 @@ public class PatientController {
 
     /**
      * Handles HTTP POST requests for patient login.<p>
-     * * Accepts a `Login` DTO containing email/username and password.<br>
+     * * Accepts a `LoginDTO` DTO containing email/username and password.<br>
      * * Delegates authentication to the `validatePatientLogin` method in the shared service.</p>
-     * @param loginDTO ...
+     * @param loginDto ...
      * @return Returns a response with a token or an error message depending on login success
      */
     @GetMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid Login loginDTO) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginDTO loginDto) {
         return composeResponse(HttpStatus.OK, "token",
-            mainService.validatePatientLogin(loginDTO.getIdentifier(), loginDTO.getPassword()));
+            mainService.validatePatientLogin(loginDto.getIdentifier(), loginDto.getPassword()));
     }
     
     /**
@@ -87,10 +87,10 @@ public class PatientController {
      * @param id Patient ID
      * @return If valid, retrieves the patient's appointment data from `PatientService`; otherwise, returns a validation error.
      */
-    @GetMapping("/appointments/{id}")
+    @GetMapping("/appointments/{id}/{user}/{token}")
     public ResponseEntity<Map<String, List<AppointmentDTO>>> getPatientAppointment(
-        @PathVariable("X-User") @Valid String user,
-        @PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid String user,
+        @PathVariable @Valid String token,
         @PathVariable @Valid long id) {
 
         mainService.validateToken(token, user);
@@ -107,11 +107,11 @@ public class PatientController {
      * @param token t
      * @return If valid, delegates filtering logic to the shared service and returns the filtered result.
      */
-    @GetMapping("/appointments/filter")
+    @GetMapping("/appointments2/{name}/{condition}/{token}")
     public ResponseEntity<Map<String, List<AppointmentDTO>>> filterPatientAppointment(
         @PathVariable(required = false) String condition,
         @PathVariable(required = false) String name,
-        @PathVariable("Authorization") String token) {
+        @PathVariable String token) {
         
         mainService.validateToken(token, "patient");
         List<Appointment> appoints = mainService.filterPatient(token, Integer.parseInt(condition), name);
