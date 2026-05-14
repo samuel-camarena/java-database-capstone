@@ -24,7 +24,7 @@ import static com.project.back_end.utils.AppHelper.composeResponse;
  * This class centralizes all routes that deal with booking, updating, retrieving, and canceling appointments.
  */
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("${api.path}" + "v1/appointment")
 public class AppointmentController {
     
     private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
@@ -45,20 +45,41 @@ public class AppointmentController {
      * * Validates the token for the `"patient"` role.<br>
      * * Uses service logic to validate the appointment data (e.g., check for doctor availability and time conflicts).</p>
      * @param token token for the `"patient"` role.
-     * @param appointDTO a new appointment with DTO format.
+     * @param appointDto a new appointment with DTO format.
      * @return Success message if booked, or appropriate error messages if the doctor ID is invalid or the slot is already taken.
      */
     @PostMapping("/{token}")
     public ResponseEntity<Map<String, String>> bookAppointment(
-        @PathVariable("Authorization") @Valid String token,
-        @RequestBody @Valid AppointmentDTO appointDTO) {
+        @PathVariable @Valid String token,
+        @RequestBody @Valid AppointmentDTO appointDto) {
         
         mainService.validateToken(token, "patient");
-        Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDTO);
+        Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDto);
         
         appointmentService.createAppointment(appoint);
-        logger.info("{}createAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appointDTO);
+        logger.info("{}createAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appointDto);
         return composeResponse(HttpStatus.CREATED, "message", "Appointment successfully booked");
+    }
+    
+    /**
+     * Handles HTTP GET requests to fetch all appointments based on doctor credentials.<p>
+     * * Takes the JWT token as path variable.<br>
+     * * Validates the token for role `"doctor"` using the `MainService`.</p>
+     * @param token of type JWT for role `"doctor"`
+     * @return Return all appointments for all patients of the authenticated doctor, if token is valid.
+     * Otherwise, throws InvalidJwtTokenException
+     */
+    @GetMapping("/{token}")
+    public ResponseEntity<Map<String, List<AppointmentDTO>>> getAllAppointmentsOfADoctor(
+        @PathVariable @Valid String token) {
+        
+        mainService.validateToken(token, "doctor");
+        long doctorId = mainService.extractSubjectIdFromToken(token, "doctor");
+        
+        List<AppointmentDTO> appointsDTO = dtoMapper
+            .mapAppointmentsToDTOs(appointmentService
+                    .getAppointmentsByDoctorId(doctorId));
+        return composeResponse(HttpStatus.OK, "appointments", appointsDTO);
     }
     
     /**
@@ -72,8 +93,8 @@ public class AppointmentController {
      * throws InvalidJwtTokenException
      */
     @GetMapping("/{date}/{patientName}/{token}")
-    public ResponseEntity<Map<String, List<AppointmentDTO>>> getAppointments(
-        @PathVariable("Authorization") @Valid String token,
+    public ResponseEntity<Map<String, List<AppointmentDTO>>> filterAllAppointmentsOfADoctor(
+        @PathVariable @Valid String token,
         @PathVariable("date") @Valid LocalDate date,
         @PathVariable("patientName") @Valid String patientName) {
         
@@ -82,7 +103,7 @@ public class AppointmentController {
         
         List<AppointmentDTO> appointsDTO = dtoMapper.mapAppointmentsToDTOs(
             appointmentService.getAppointments(doctorId, date, patientName));
-        logger.info("{}getAppointments::", MsgHeader.SUCCESS.compose());
+        logger.info("{}getAllAppointments::", MsgHeader.SUCCESS.compose());
         return composeResponse(HttpStatus.OK, "appointments", appointsDTO);
     }
     
@@ -93,16 +114,16 @@ public class AppointmentController {
      * * Delegates the update logic to the `AppointmentService`.<br>
      * * Returns an appropriate success or failure response based on the update result</p>
      * @param token token for `"patient"` role.
-     * @param appointDTO to modify an existing appointment
+     * @param appointDto to modify an existing appointment
      * @return Returns an appropriate success or failure response
      */
     @PutMapping("/{token}")
     public ResponseEntity<Map<String, String>> updateAppointment(
-        @PathVariable("Authorization") @Valid String token,
-        @RequestBody @Valid AppointmentDTO appointDTO) {
+        @PathVariable @Valid String token,
+        @RequestBody @Valid AppointmentDTO appointDto) {
         
         mainService.validateToken(token, "patient");
-        Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDTO);
+        Appointment appoint = dtoMapper.mapDTOtoAppointment(appointDto);
         
         appointmentService.updateAppointment(appoint);
         logger.info("{}updateAppointment::", MsgHeader.SUCCESS.compose());
@@ -120,7 +141,7 @@ public class AppointmentController {
      */
     @DeleteMapping("/{id}/{token}")
     public ResponseEntity<Map<String, String>> cancelAppointment(
-        @PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid String token,
         @PathVariable("id") @Valid long id) {
         
         mainService.validateToken(token, "patient");
