@@ -2,6 +2,7 @@ package com.project.back_end.services;
 
 import com.project.back_end.exceptions.*;
 import com.project.back_end.models.Appointment;
+import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.PatientRepository;
@@ -50,6 +51,18 @@ public class AppointmentService {
         logger.info("{}createAppointment:: {}", MsgHeader.SUCCESS.compose(), "Appointment booked with data: " + appoint);
     }
     
+    public List<Appointment> getAppointmentsByDoctorId(long doctorId) {
+        List<Appointment> appoints = appointmentRepo.findByDoctorId(doctorId);
+        if (appoints.isEmpty()) {
+            logger.warn("Appointments not found via get all appointments");
+            return List.of();
+        }
+        
+        logger.info("{} appointments found via get all appointments", appoints.size());
+        return appoints;
+    }
+    
+    
     /**
      * This method retrieves a list of appointments for a specific doctor on a particular day, optionally filtered by
      * the patient's name.<p>
@@ -70,7 +83,7 @@ public class AppointmentService {
             appoints = appointmentRepo
                 .findByDoctorIdAndAppointmentTime(doctorId, date);
         }
-        logger.info("{}getAppointments:: {}", MsgHeader.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
+        logger.info("{}getAllAppointments:: {}", MsgHeader.SUCCESS.compose(), "Appointments retrieve for doctor ID: "
             + doctorId + ", at day: " + date + " and optional patient name: " + patientName);
         return appoints;
     }
