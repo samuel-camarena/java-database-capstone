@@ -1,7 +1,6 @@
 package com.project.back_end.repo;
 
 import com.project.back_end.models.Doctor;
-import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
@@ -40,8 +39,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * @return List of Doctors.
      */
     @EntityGraph(attributePaths = {"availableTimes"})
-    @NativeQuery(value = "SELECT * FROM doctor WHERE name LIKE %?1%")
-    List<Doctor> findByNameLike(String name);
+    List<Doctor> findByNameContaining(String name);
     
     /**
      * This method retrieves a list of Doctors where the name contains the search string (case-insensitive) and
@@ -52,7 +50,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * @return List of Doctors.
      */
     @EntityGraph(attributePaths = {"availableTimes"})
-    List<Doctor> findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(String name, String specialty);
+    List<Doctor> findByNameContainingAndSpecialtyIgnoreCase(String name, String specialty);
     
     /**
      * This method retrieves a list of Doctors with the specified specialty, ignoring case sensitivity.
@@ -63,16 +61,12 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> findBySpecialtyIgnoreCase(String specialty);
     
     @EntityGraph(attributePaths = {"availableTimes"})
-    List<Doctor> findByNameAndSpecialty(String name, String specialty);
-    
-    @EntityGraph(attributePaths = {"availableTimes"})
-    List<Doctor> findByNameIgnoreCaseAndSpecialty(String name, String specialty);
+    List<Doctor> findByNameIgnoreCaseAndSpecialtyIgnoreCase(String name, String specialty);
     
     @EntityGraph(attributePaths = {"availableTimes"})
     @NativeQuery(value = "SELECT * FROM doctor d, doctor_available_times dat WHERE TIME(dat.available_times) = TIME(?1) AND dat.doctor_id = d.id")
     List<Doctor> findByAvailableTimesEqualsTime(String timePeriod);
     
-    //@Transcient
     default boolean notExistsById(Long id) {
         return !existsById(id);
     }
