@@ -48,7 +48,7 @@ public class PrescriptionController {
      */
     @PostMapping("/{token}")
     public ResponseEntity<Map<String, String>> savePrescription(
-        @PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid String token,
         @RequestBody @Valid Prescription prescription) {
         
         mainService.validateToken(token, "doctor");
@@ -70,7 +70,7 @@ public class PrescriptionController {
      */
     @GetMapping("/{appointmentId}/{token}")
     public ResponseEntity<Map<String, List<Prescription>>> getPrescription(
-        @PathVariable("Authorization") @Valid String token,
+        @PathVariable @Valid String token,
         @PathVariable @Valid long appointmentId) {
         
         mainService.validateToken(token, "doctor");
