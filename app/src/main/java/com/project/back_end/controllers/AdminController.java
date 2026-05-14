@@ -1,6 +1,7 @@
 
 package com.project.back_end.controllers;
 
+import com.project.back_end.DTO.LoginDTO;
 import com.project.back_end.models.Admin;
 import com.project.back_end.services.MainService;
 import jakarta.validation.Valid;
@@ -30,9 +31,9 @@ public class AdminController {
      * @return Returns a response with a token or an error message depending on login success.
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> adminLogin(@RequestBody @Valid Admin admin) {
+    public ResponseEntity<Map<String, String>> adminLogin(@RequestBody @Valid LoginDTO loginDto) {
         return composeResponse(HttpStatus.OK, "token",
-            mainService.validateAdminLogin(admin.getUsername(), admin.getPassword()));
+            mainService.validateAdminLogin(loginDto.getIdentifier(), loginDto.getPassword()));
     }
 }
 
