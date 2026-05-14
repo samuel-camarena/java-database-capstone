@@ -1,5 +1,7 @@
 package com.project.back_end.config;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class EntityConstraintsConfig {
     // # Standardized MSGs for Constraint Violations.
     public static final String NOT_NULL_MSG                         = "must not be null";
@@ -20,20 +22,21 @@ public class EntityConstraintsConfig {
     
     public static final String EMAIL_NOT_BLANK_MSG                  = "Email " + NOT_BLANK_MSG;
     public static final String EMAIL_NON_UNIQUE_MSG                 = "Email " + NON_UNIQUE_MSG;
-    public static final String EMAIL_VALIDATION_REGEX               = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
+    //public static final String EMAIL_VALIDATION_REGEX               = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
     public static final String EMAIL_INVALID_REGEX_MSG              = "Email address must have a valid format";
     
-    public static final String PASSWORD_SIMPLE_NOT_BLANK_MSG        = "Password " + NOT_BLANK_MSG;
     /*
       OWASP Simple Password Validation Regex with custom extension:
       - 6 to 20 character password requiring numbers and both lowercase and uppercase letters
      */
     //@Value("${password-simple-validation-regex}")
-    public static final String PASSWORD_SIMPLE_VALIDATION_REGEX     = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
-    public static final String PASSWORD_SIMPLE_INVALID_PATTERN_MSG  = "Password must be 6-20 characters, containing any combination of characters having minimum a lowercase plus an uppercase letters and any number";
     /*
         OWASP Complex Password Validation Regex
     */
+    public static final String PASSWORD_SIMPLE_NOT_BLANK_MSG        = "Password " + NOT_BLANK_MSG;
+    //public static final String PASSWORD_SIMPLE_VALIDATION_REGEX     = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+    
+    public static final String PASSWORD_SIMPLE_INVALID_PATTERN_MSG  = "Password must be 6-20 characters, combining lowercase plus uppercase characters and numbers";
     public static final String PASSWORD_COMPLEX_VALIDATION_REGEX    =
         "^(?:(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])" +
         "(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))(?!.*(.)\\1{2,})" +
@@ -59,6 +62,7 @@ public class EntityConstraintsConfig {
     public static final String SPECIALTY_INVALID_SIZE_MSG           = "Specialty must be between " + SPECIALTY_SIZE_MIN + " and " + SPECIALTY_SIZE_MAX + " characters";
     
     public static final String AVAILABLE_TIMES_NOT_EMPTY_MSG        = "Available times " + NOT_EMPTY_MSG;
+    public static final String AVAILABLE_TIMES_NOT_BLANK_MSG        = "Available times " + NOT_BLANK_MSG;
     
     public static final String YEARS_OF_EXP_NOT_NULL_MSG            = "Years of experience " + NOT_NULL_MSG;
     public static final int YEARS_OF_EXP_RANGE_MIN                  = 0;
@@ -75,8 +79,8 @@ public class EntityConstraintsConfig {
     public static final String DOCTOR_NOT_EMPTY_MSG                 = "Doctor " + NOT_EMPTY_MSG;
     public static final String DOCTORS_NOT_NULL_MSG                 = "Doctors list " + NOT_NULL_MSG;
     public static final String DOCTORS_NOT_EMPTY_MSG                = "Doctors list " + NOT_EMPTY_MSG;
-    public static final String DOCTOR_ID_NOT_EXISTS_MSG             = "No Doctor registered by ID: ";
-    public static final String DOCTOR_EMAIL_NOT_EXISTS_MSG          = "No Doctor registered by email: ";
+    public static final String DOCTOR_ID_NOT_EXISTS_MSG             = "No Doctor registered by ID:";
+    public static final String DOCTOR_EMAIL_NOT_EXISTS_MSG          = "No Doctor registered by email:";
     public static final String DOCTOR_NON_UNIQUE_EMAIL_MSG          = "Doctor " + EMAIL_NON_UNIQUE_MSG;
     public static final String DOCTOR_NON_UNIQUE_EMAIL_FRIENDLY_MSG = "Doctor's email already registered";
     public static final String TIME_PERIOD_NOT_BLANK_MSG            = "Time period must not be null nor blank";
