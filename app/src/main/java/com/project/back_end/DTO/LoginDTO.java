@@ -1,9 +1,16 @@
 package com.project.back_end.DTO;
 
-public class Login {
+public class LoginDTO {
     
     private String identifier; // email para Doctor/Paciente, username para Administrador
     private String password;
+    private String role;
+    
+    public LoginDTO(String identifier, String password, String role) {
+        this.identifier = identifier;
+        this.password = password;
+        this.role = role;
+    }
     
     public String getIdentifier() {
         return identifier;
@@ -19,5 +26,13 @@ public class Login {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public String getRole() {
+        return role;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
     }
 }
